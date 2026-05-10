@@ -2,7 +2,7 @@
   --bg-color: #020617;
   --surface-color: rgba(30, 41, 59, 0.6);
   --surface-hover: rgba(51, 65, 85, 0.8);
-  --primary-color: #d4af37;
+  --primary-color: #dc2626;
   --primary-hover: #b5952f;
   --accent-color: #eab308;
   --text-main: #f8fafc;
@@ -294,3 +294,4 @@ h1, h2, h3, h4 { color: #fff; margin-bottom: 0.5rem; font-weight: 700; }
 .card-slider::-webkit-scrollbar-thumb:hover {
   background: rgba(212, 175, 55, 0.4);
 }
+
