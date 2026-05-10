@@ -57,7 +57,7 @@ export const LoginPage = () => {
       className="d-flex items-center justify-center" 
       style={{ 
         minHeight: '100vh',
-        backgroundImage: 'linear-gradient(to bottom, rgba(2, 6, 23, 0.8), rgba(30, 27, 75, 0.8)), url("/background.png")',
+        backgroundImage: 'linear-gradient(to bottom, rgba(2, 6, 23, 0.8), rgba(30, 27, 75, 0.8)), url("/background.jpg")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed',
@@ -160,4 +160,3 @@ export const LoginPage = () => {
     </div>
   );
 };
-

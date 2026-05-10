@@ -993,7 +993,7 @@ export const Dono = () => {
 
         // Borda externa dourada (espessa)
 
-        doc.setDrawColor(220, 38, 38); 
+        doc.setDrawColor(212, 175, 55); 
 
         doc.setLineWidth(1.5);
 
@@ -1007,7 +1007,7 @@ export const Dono = () => {
 
         // Título Principal
 
-        doc.setTextColor(220, 38, 38); 
+        doc.setTextColor(212, 175, 55); 
 
         doc.setFontSize(18); 
 
@@ -1017,7 +1017,7 @@ export const Dono = () => {
 
         // Linha divisória ornamental
 
-        doc.setDrawColor(220, 38, 38);
+        doc.setDrawColor(212, 175, 55);
 
         doc.setLineWidth(0.5);
 
@@ -1025,7 +1025,7 @@ export const Dono = () => {
 
         // Fundo da Mesa (Pílula dourada)
 
-        doc.setFillColor(220, 38, 38); 
+        doc.setFillColor(212, 175, 55); 
 
         doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
 
@@ -1043,7 +1043,7 @@ export const Dono = () => {
 
         doc.setFillColor(255, 255, 255);
 
-        doc.setDrawColor(220, 38, 38);
+        doc.setDrawColor(212, 175, 55);
 
         doc.setLineWidth(0.5);
 
@@ -1117,23 +1117,23 @@ export const Dono = () => {
 
             doc.setFillColor(252, 252, 252); doc.rect(0, 0, 105, 148, 'F');
 
-            doc.setDrawColor(220, 38, 38); doc.setLineWidth(1.5); doc.rect(5, 5, 95, 138);
+            doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.5); doc.rect(5, 5, 95, 138);
 
             doc.setLineWidth(0.3); doc.rect(7, 7, 91, 134);
 
-            doc.setTextColor(220, 38, 38); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+            doc.setTextColor(212, 175, 55); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
 
             doc.text('Big Bifee', 52.5, 23, { align: 'center' });
 
-            doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.5); doc.line(30, 27, 75, 27);
+            doc.setDrawColor(212, 175, 55); doc.setLineWidth(0.5); doc.line(30, 27, 75, 27);
 
-            doc.setFillColor(220, 38, 38); doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
+            doc.setFillColor(212, 175, 55); doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
 
             doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont('helvetica', 'bold');
 
             doc.text(`MESA ${m.numero}`, 52.5, 40.5, { align: 'center' });
 
-            doc.setFillColor(255, 255, 255); doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.5);
+            doc.setFillColor(255, 255, 255); doc.setDrawColor(212, 175, 55); doc.setLineWidth(0.5);
 
             doc.roundedRect(24, 52, 57, 57, 4, 4, 'FD');
 
@@ -1841,9 +1841,9 @@ export const Dono = () => {
 
             value={`R$ ${formatCurrency(faturamento)}`} 
 
-            icon={<TrendingUp size={24} color="#dc2626" />} 
+            icon={<TrendingUp size={24} color="#d4af37" />} 
 
-            color="#dc2626" 
+            color="#d4af37" 
 
             trend="Faturamento total" 
 
@@ -2469,7 +2469,7 @@ export const Dono = () => {
 
                   borderRadius: '10px', 
 
-                  background: u.role === 'dono' ? 'rgba(220,38,38,0.1)' : 'rgba(255,255,255,0.05)',
+                  background: u.role === 'dono' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.05)',
 
                   color: u.role === 'dono' ? 'var(--primary-color)' : '#fff',
 
@@ -2535,7 +2535,7 @@ export const Dono = () => {
 
                     borderRadius: '10px', 
 
-                    background: u.role === 'dono' ? 'rgba(220,38,38,0.1)' : 'rgba(255,255,255,0.05)',
+                    background: u.role === 'dono' ? 'rgba(212,175,55,0.1)' : 'rgba(255,255,255,0.05)',
 
                     color: u.role === 'dono' ? 'var(--primary-color)' : '#fff',
 
@@ -2825,7 +2825,7 @@ export const Dono = () => {
 
         <div className="d-flex gap-2">
 
-          <button className="btn-outline" onClick={handleGenerateAllPDFs} style={{ width: 'auto', borderColor: '#dc2626', color: '#dc2626' }}>
+          <button className="btn-outline" onClick={handleGenerateAllPDFs} style={{ width: 'auto', borderColor: '#d4af37', color: '#d4af37' }}>
 
             Imprimir Todos QR Codes
 
@@ -2881,7 +2881,7 @@ export const Dono = () => {
 
         <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
 
-          <KPIItem title="⭐ Média Atendimento" value={avgAtend} icon={<UsersIcon size={20} color="#dc2626"/>} color="#dc2626" trend="Geral" />
+          <KPIItem title="⭐ Média Atendimento" value={avgAtend} icon={<UsersIcon size={20} color="#d4af37"/>} color="#d4af37" trend="Geral" />
 
           <KPIItem title="🍱 Média Comida" value={avgComida} icon={<Utensils size={20} color="#10b981"/>} color="#10b981" trend="Sabor" />
 
@@ -2907,7 +2907,7 @@ export const Dono = () => {
 
                 <div className="d-flex gap-3" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
 
-                   <span style={{ color: '#dc2626' }}>ATEND: {av.nota_atendimento}/5</span>
+                   <span style={{ color: '#d4af37' }}>ATEND: {av.nota_atendimento}/5</span>
 
                    <span style={{ color: '#10b981' }}>COMIDA: {av.nota_comida}/5</span>
 
@@ -2979,7 +2979,7 @@ export const Dono = () => {
 
               <div key={mesa.id} className="card" style={{ padding: '0', borderLeft: '4px solid var(--primary-color)' }}>
 
-                <div style={{ padding: isMobile ? '1rem' : '1.5rem', background: 'rgba(220,38,38,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)' }}>
+                <div style={{ padding: isMobile ? '1rem' : '1.5rem', background: 'rgba(212,175,55,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid var(--border-color)' }}>
 
                   <div className="d-flex items-center gap-3">
 
@@ -3283,7 +3283,7 @@ export const Dono = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
 
-           <KPIItem title="Faturamento Total" value={`R$ ${formatCurrency(totalBruto)}`} icon={<TrendingUp color="#dc2626" />} color="#dc2626" trend="Total" />
+           <KPIItem title="Faturamento Total" value={`R$ ${formatCurrency(totalBruto)}`} icon={<TrendingUp color="#d4af37" />} color="#d4af37" trend="Total" />
 
            <KPIItem title="Consumo Real" value={`R$ ${formatCurrency(totalLiquido)}`} icon={<Package color="#10b981" />} color="#10b981" trend="Vendas" />
 
@@ -3517,7 +3517,7 @@ export const Dono = () => {
 
         {/* Turno Atual / Gestão em Tempo Real */}
 
-        <div className="mb-8 p-4 p-md-6 card" style={{ background: 'rgba(220,38,38,0.03)', border: '1px solid rgba(220,38,38,0.2)' }}>
+        <div className="mb-8 p-4 p-md-6 card" style={{ background: 'rgba(212,175,55,0.03)', border: '1px solid rgba(212,175,55,0.2)' }}>
 
             <div className="d-flex justify-between items-center mb-6">
 
@@ -3611,7 +3611,7 @@ export const Dono = () => {
 
                                 padding: isMobile ? '1rem' : '1.2rem 1.5rem', 
 
-                                background: isDateExpanded ? 'rgba(220,38,38,0.05)' : 'rgba(255,255,255,0.01)', 
+                                background: isDateExpanded ? 'rgba(212,175,55,0.05)' : 'rgba(255,255,255,0.01)', 
 
                                 cursor: 'pointer',
 
@@ -3627,9 +3627,9 @@ export const Dono = () => {
 
                             <div className="d-flex items-center gap-3 md:gap-4">
 
-                                <div style={{ background: 'rgba(220,38,38,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
+                                <div style={{ background: 'rgba(212,175,55,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
 
-                                    <Folder size={isMobile ? 20 : 24} color="#dc2626" fill="rgba(220,38,38,0.1)" />
+                                    <Folder size={isMobile ? 20 : 24} color="#d4af37" fill="rgba(212,175,55,0.1)" />
 
                                 </div>
 
@@ -3681,7 +3681,7 @@ export const Dono = () => {
 
                                     const diferenca = t.status === 'fechado' ? declarado - esperado : 0;
 
-                                    const statusColor = Math.abs(diferenca) < 0.1 ? '#10b981' : diferenca > 0 ? '#dc2626' : '#ef4444';
+                                    const statusColor = Math.abs(diferenca) < 0.1 ? '#10b981' : diferenca > 0 ? '#d4af37' : '#ef4444';
 
                                     const totalOS = t.pedidos?.reduce((acc: number, p: any) => acc + Number(p.total), 0) || 0;
 
@@ -4011,7 +4011,7 @@ export const Dono = () => {
 
                                 padding: isMobile ? '1rem' : '1.2rem 1.5rem', 
 
-                                background: isExpanded ? 'rgba(220,38,38,0.05)' : 'rgba(255,255,255,0.01)', 
+                                background: isExpanded ? 'rgba(212,175,55,0.05)' : 'rgba(255,255,255,0.01)', 
 
                                 cursor: 'pointer',
 
@@ -4027,9 +4027,9 @@ export const Dono = () => {
 
                             <div className="d-flex items-center gap-3 md:gap-4">
 
-                                <div style={{ background: 'rgba(220,38,38,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
+                                <div style={{ background: 'rgba(212,175,55,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
 
-                                    <HistoryIcon size={isMobile ? 20 : 24} color="#dc2626" />
+                                    <HistoryIcon size={isMobile ? 20 : 24} color="#d4af37" />
 
                                 </div>
 
@@ -4711,7 +4711,7 @@ export const Dono = () => {
             display: 'flex', 
             alignItems: 'center', 
             justifyContent: 'center',
-            boxShadow: '0 4px 15px rgba(220,38,38,0.4)',
+            boxShadow: '0 4px 15px rgba(212,175,55,0.4)',
             border: '2px solid rgba(0,0,0,0.1)'
           }}
         >
@@ -4829,7 +4829,7 @@ export const Dono = () => {
 
             }}
 
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(220,38,38,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#dc2626'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,175,55,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#d4af37'; }}
 
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)'; }}
 
