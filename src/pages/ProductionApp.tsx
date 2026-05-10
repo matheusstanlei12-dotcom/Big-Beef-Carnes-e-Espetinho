@@ -201,7 +201,7 @@ export const Producao = () => {
       </header>
 
       {!monitoringActive && (
-        <div className="card mb-8" style={{ backgroundColor: 'rgba(212, 175, 55, 0.1)', border: '1px solid var(--primary-color)', textAlign: 'center' }}>
+        <div className="card mb-8" style={{ backgroundColor: 'rgba(220, 38, 38, 0.1)', border: '1px solid var(--primary-color)', textAlign: 'center' }}>
           <h4 style={{ color: 'var(--primary-color)', marginBottom: '0.5rem' }}>Monitoramento de Pedidos</h4>
           <p className="text-muted mb-4" style={{ fontSize: '0.85rem' }}>Ative para receber notificações visuais/vibração e proibir a tela de apagar:</p>
           <button onClick={startMonitoring} className="btn-primary" style={{ width: 'auto', padding: '0.8rem 2rem' }}>
@@ -259,7 +259,7 @@ export const Producao = () => {
         ) : (
           visibleItems.map(item => (
             <div key={item.id} className="card" style={{ borderLeft: '6px solid var(--danger-color)', padding: '1.5rem' }}>
-              <div className="d-flex justify-between items-center mb-4" style={{ background: 'rgba(212, 175, 55, 0.1)', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+              <div className="d-flex justify-between items-center mb-4" style={{ background: 'rgba(220, 38, 38, 0.1)', padding: '0.8rem', borderRadius: '8px', border: '1px solid rgba(220, 38, 38, 0.2)' }}>
                 <span style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary-color)' }}>MESA {item.mesa}</span>
                 <div className="d-flex flex-col items-end">
                    <span style={{ color: item.status === 'pendente' ? 'var(--danger-color)' : 'var(--warning-color)', fontWeight: 800, fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px' }}>{item.status}</span>

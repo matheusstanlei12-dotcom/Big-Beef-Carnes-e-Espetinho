@@ -644,7 +644,7 @@ export const Garcom = () => {
 
                       {items.length > 0 && (
 
-                        <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
+                        <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(220, 38, 38, 0.1)' }}>
 
                           {items.map(it => (
 
@@ -802,7 +802,7 @@ export const Garcom = () => {
 
               {!monitoringActive && (
 
-                <div className="card mb-6 text-center" style={{background: 'rgba(212,175,55,0.1)', border: '1px solid var(--primary-color)'}}>
+                <div className="card mb-6 text-center" style={{background: 'rgba(220,38,38,0.1)', border: '1px solid var(--primary-color)'}}>
 
                   <p className="mb-4">Ative os alertas para receber notificações de chamados e pedidos prontos.</p>
 
