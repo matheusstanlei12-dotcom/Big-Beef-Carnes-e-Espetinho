@@ -1,7 +1,13 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://dummy.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'dummy_key';
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('❌ ERRO CRÍTICO: Chaves do Supabase não encontradas no build! Você precisa fazer um Redeploy na Vercel.');
+} else {
+  console.log('✅ Configuração do Supabase detectada no build.');
+}
 
 // Realtime reativado para suportar atualizações de estoque instantâneas.
 const clientOptions = {
@@ -22,3 +28,4 @@ export const tempAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
 if (typeof window !== 'undefined') {
   (window as any).supabase = supabase;
 }
+
