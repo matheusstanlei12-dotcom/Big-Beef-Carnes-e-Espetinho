@@ -2,9 +2,9 @@
   --bg-color: #020617;
   --surface-color: rgba(30, 41, 59, 0.6);
   --surface-hover: rgba(51, 65, 85, 0.8);
-  --primary-color: #d4af37;
-  --primary-hover: #b5952f;
-  --accent-color: #eab308;
+  --primary-color: #dc2626;
+  --primary-hover: #b91c1c;
+  --accent-color: #ef4444;
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --border-color: rgba(255, 255, 255, 0.1);
@@ -294,3 +294,4 @@ h1, h2, h3, h4 { color: #fff; margin-bottom: 0.5rem; font-weight: 700; }
 .card-slider::-webkit-scrollbar-thumb:hover {
   background: rgba(212, 175, 55, 0.4);
 }
+

@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://dummy.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'dummy_key';
+const supabaseUrl = 'https://onawbdkzygymfknkrnze.supabase.co';
+const supabaseAnonKey = 'sb_publishable_fwnqrLz-zqQsXAzxE7BoYw_2V3NnoM3';
 
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ ERRO CRÍTICO: Chaves do Supabase não encontradas no build! Você precisa fazer um Redeploy na Vercel.');
