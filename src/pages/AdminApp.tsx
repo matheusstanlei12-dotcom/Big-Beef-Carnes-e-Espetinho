@@ -54,7 +54,7 @@ const ROLE_COLORS: Record<string, string> = {
 
   garcom: '#3b82f6', caixa: '#10b981', cozinha: '#f59e0b',
 
-  admin: '#8b5cf6', dono: '#dc2626'
+  admin: '#8b5cf6', dono: '#d4af37'
 
 };
 
@@ -732,7 +732,7 @@ export const Administracao = () => {
 
       <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
 
-        style={{ width: '40px', height: '40px', border: '3px solid #dc2626', borderTopColor: 'transparent', borderRadius: '50%' }}
+        style={{ width: '40px', height: '40px', border: '3px solid #d4af37', borderTopColor: 'transparent', borderRadius: '50%' }}
 
       />
 
@@ -754,11 +754,11 @@ export const Administracao = () => {
 
         background: activeTab === id ? 'rgba(212,175,55,0.12)' : 'transparent',
 
-        color: activeTab === id ? '#dc2626' : 'rgba(255,255,255,0.5)',
+        color: activeTab === id ? '#d4af37' : 'rgba(255,255,255,0.5)',
 
         fontWeight: activeTab === id ? 700 : 500, fontSize: '0.9rem',
 
-        borderLeft: activeTab === id ? '3px solid #dc2626' : '3px solid transparent'
+        borderLeft: activeTab === id ? '3px solid #d4af37' : '3px solid transparent'
 
       }}
 
@@ -784,9 +784,9 @@ export const Administracao = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
 
-            <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'contain', border: '1px solid #dc2626' }} />
+            <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'contain', border: '1px solid #d4af37' }} />
 
-            <div className="mobile-hide" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#dc2626', letterSpacing: '1px' }}>Big Bifee</div>
+            <div className="mobile-hide" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#d4af37', letterSpacing: '1px' }}>Big Bifee</div>
 
           </div>
 
@@ -860,7 +860,7 @@ export const Administracao = () => {
 
                 <StatCard icon={<ShoppingBag size={22} color="#10b981"/>} label="Pedidos Ativos" value={pedidosAtivos.length} sub="Mesas atendidas agora" color="#10b981" />
 
-                <StatCard icon={<Star size={22} color="#dc2626"/>} label="Nota Média" value={mediaNota} sub={`${avaliacoes.length} avaliaç${avaliacoes.length === 1 ? 'ão' : 'ões'}`} color="#dc2626" />
+                <StatCard icon={<Star size={22} color="#d4af37"/>} label="Nota Média" value={mediaNota} sub={`${avaliacoes.length} avaliaç${avaliacoes.length === 1 ? 'ão' : 'ões'}`} color="#d4af37" />
 
               </div>
 
@@ -870,7 +870,7 @@ export const Administracao = () => {
 
                 <h3 style={{ marginBottom: '1.2rem', fontWeight: 800, fontSize: '1rem' }}>
 
-                  <LayoutGrid size={16} style={{ verticalAlign: 'middle', marginRight: '8px', color: '#dc2626' }}/>
+                  <LayoutGrid size={16} style={{ verticalAlign: 'middle', marginRight: '8px', color: '#d4af37' }}/>
 
                   Status das Mesas
 
@@ -882,7 +882,7 @@ export const Administracao = () => {
 
                     const statusLower = (m.status || '').toLowerCase();
 
-                    const color = statusLower === 'livre' ? '#10b981' : statusLower === 'aguardando conta' ? '#dc2626' : '#ef4444';
+                    const color = statusLower === 'livre' ? '#10b981' : statusLower === 'aguardando conta' ? '#d4af37' : '#ef4444';
 
                     const isOccupied = statusLower !== 'livre';
 
@@ -992,7 +992,7 @@ export const Administracao = () => {
 
                 <button onClick={() => setShowAddProduct(!showAddProduct)} style={{
 
-                  display: 'flex', alignItems: 'center', gap: '8px', background: '#dc2626', color: '#000',
+                  display: 'flex', alignItems: 'center', gap: '8px', background: '#d4af37', color: '#000',
 
                   border: 'none', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem'
 
@@ -1016,7 +1016,7 @@ export const Administracao = () => {
 
                   >
 
-                    <h3 style={{ fontWeight: 800, marginBottom: '1rem', color: '#dc2626', fontSize: '0.9rem' }}>✚ ADICIONAR PRODUTO</h3>
+                    <h3 style={{ fontWeight: 800, marginBottom: '1rem', color: '#d4af37', fontSize: '0.9rem' }}>✚ ADICIONAR PRODUTO</h3>
 
                     <form onSubmit={handleAddProduto} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto auto', gap: '10px', alignItems: 'end' }}>
 
@@ -1048,7 +1048,7 @@ export const Administracao = () => {
 
                       </div>
 
-                      <button type="submit" style={{ background: '#dc2626', color: '#000', border: 'none', borderRadius: '8px', padding: '0.7rem 1.2rem', fontWeight: 800, cursor: 'pointer' }}>Salvar</button>
+                      <button type="submit" style={{ background: '#d4af37', color: '#000', border: 'none', borderRadius: '8px', padding: '0.7rem 1.2rem', fontWeight: 800, cursor: 'pointer' }}>Salvar</button>
 
                     </form>
 
@@ -1076,7 +1076,7 @@ export const Administracao = () => {
 
                 <div key={cat} style={{ marginBottom: '1.5rem' }}>
 
-                  <div style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '2px', color: '#dc2626', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 800, letterSpacing: '2px', color: '#d4af37', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
 
                     <div style={{ height: '1px', width: '20px', background: 'rgba(212,175,55,0.3)' }}/>
 
@@ -1110,7 +1110,7 @@ export const Administracao = () => {
 
                             <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
 
-                              <span style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: 600 }}>R$</span>
+                              <span style={{ fontSize: '0.7rem', color: '#d4af37', fontWeight: 600 }}>R$</span>
 
                               <input 
 
@@ -1208,13 +1208,13 @@ export const Administracao = () => {
 
             <div style={{ display: 'flex', gap: '10px' }}>
 
-              <button onClick={handleGenerateAllPDFs} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', color: '#dc2626', border: '1px solid #dc2626', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem' }}>
+              <button onClick={handleGenerateAllPDFs} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'transparent', color: '#d4af37', border: '1px solid #d4af37', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem' }}>
 
                 <QrCode size={16}/> Imprimir Todos
 
               </button>
 
-              <button onClick={handleAddMesa} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#dc2626', color: '#000', border: 'none', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem' }}>
+              <button onClick={handleAddMesa} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#d4af37', color: '#000', border: 'none', borderRadius: '10px', padding: '10px 18px', fontWeight: 800, cursor: 'pointer', fontSize: '0.85rem' }}>
 
                 <Plus size={16}/> Nova Mesa
 
@@ -1228,7 +1228,7 @@ export const Administracao = () => {
 
                 {mesas.map(m => {
 
-                  const statusColor = m.status === 'livre' ? '#10b981' : m.status === 'aguardando conta' ? '#dc2626' : '#ef4444';
+                  const statusColor = m.status === 'livre' ? '#10b981' : m.status === 'aguardando conta' ? '#d4af37' : '#ef4444';
 
                   return (
 
@@ -1274,7 +1274,7 @@ export const Administracao = () => {
 
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
 
-                        <button onClick={() => handleGeneratePDF(m.numero, m.qr_code)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: '#dc2626', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '0.75rem' }}>
+                        <button onClick={() => handleGeneratePDF(m.numero, m.qr_code)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '8px', background: '#d4af37', color: '#000', border: 'none', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', fontSize: '0.75rem' }}>
 
                           <QrCode size={14}/> QR Code
 
@@ -1378,7 +1378,7 @@ export const Administracao = () => {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
 
-                  {[{ label: 'Atendimento', key: 'nota_atendimento', color: '#dc2626' }, { label: 'Comida', key: 'nota_comida', color: '#10b981' }, { label: 'Ambiente', key: 'nota_ambiente', color: '#3b82f6' }].map(cat => {
+                  {[{ label: 'Atendimento', key: 'nota_atendimento', color: '#d4af37' }, { label: 'Comida', key: 'nota_comida', color: '#10b981' }, { label: 'Ambiente', key: 'nota_ambiente', color: '#3b82f6' }].map(cat => {
 
                     const avg = (avaliacoes.reduce((a, av) => a + av[cat.key], 0) / avaliacoes.length).toFixed(1);
 
@@ -1416,7 +1416,7 @@ export const Administracao = () => {
 
                   <motion.div key={av.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
 
-                    className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #dc2626' }}
+                    className="card" style={{ padding: '1.5rem', borderLeft: '4px solid #d4af37' }}
 
                   >
 
@@ -1432,7 +1432,7 @@ export const Administracao = () => {
 
                       <div style={{ display: 'flex', gap: '12px', fontSize: '0.75rem', fontWeight: 700 }}>
 
-                        <span style={{ color: '#dc2626' }}>⭐ {av.nota_atendimento}</span>
+                        <span style={{ color: '#d4af37' }}>⭐ {av.nota_atendimento}</span>
 
                         <span style={{ color: '#10b981' }}>🍽 {av.nota_comida}</span>
 
@@ -1510,7 +1510,7 @@ export const Administracao = () => {
 
                 style={{ background: '#111', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', width: '100%', maxWidth: '500px', overflow: 'hidden', boxShadow: '0 25px 50px -12px rgba(0,0,0,0.5)' }}>
 
-                <div style={{ padding: '1.5rem', background: '#dc2626', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '1.5rem', background: '#d4af37', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
                   <div>
 
@@ -1550,7 +1550,7 @@ export const Administracao = () => {
 
                                 <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{it.quantidade}x {it.produtos?.nome}</div>
 
-                                <div style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: 600 }}>{it.status.toUpperCase()}</div>
+                                <div style={{ fontSize: '0.7rem', color: '#d4af37', fontWeight: 600 }}>{it.status.toUpperCase()}</div>
 
                               </div>
 
@@ -1590,7 +1590,7 @@ export const Administracao = () => {
 
                           <span style={{ fontWeight: 800 }}>TOTAL DA MESA</span>
 
-                          <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#dc2626' }}>R$ {Number(pedido?.total || 0).toFixed(2)}</span>
+                          <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#d4af37' }}>R$ {Number(pedido?.total || 0).toFixed(2)}</span>
 
                         </div>
 
@@ -1638,7 +1638,7 @@ export const Administracao = () => {
 
               style={{ background: '#101010', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '20px', width: '100%', maxWidth: '450px', overflow: 'hidden', boxShadow: '0 30px 60px -12px rgba(0,0,0,0.7)' }}>
 
-              <div style={{ padding: '1.5rem', background: '#dc2626', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ padding: '1.5rem', background: '#d4af37', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
 
                 <div>
 
@@ -1704,7 +1704,7 @@ export const Administracao = () => {
 
                                 <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: it.status === 'pronto' ? '#10b981' : '#f59e0b' }} />
 
-                                <div style={{ fontSize: '0.7rem', color: '#dc2626', fontWeight: 700, textTransform: 'uppercase' }}>{it.status}</div>
+                                <div style={{ fontSize: '0.7rem', color: '#d4af37', fontWeight: 700, textTransform: 'uppercase' }}>{it.status}</div>
 
                               </div>
 
@@ -1792,7 +1792,7 @@ export const Administracao = () => {
 
                         </div>
 
-                        <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#dc2626' }}>R$ {Number(pedido?.total || 0).toFixed(2)}</div>
+                        <div style={{ fontSize: '1.6rem', fontWeight: 900, color: '#d4af37' }}>R$ {Number(pedido?.total || 0).toFixed(2)}</div>
 
                       </div>
 
@@ -1808,7 +1808,7 @@ export const Administracao = () => {
 
                  <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', marginBottom: '1.2rem' }}>Auditando mesa em modo de visualização rápida.</p>
 
-                 <button onClick={() => setSelectedMesaComanda(null)} style={{ background: '#dc2626', color: '#000', border: 'none', padding: '1rem', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', width: '100%', boxShadow: '0 10px 20px -5px rgba(212,175,55,0.3)' }}>
+                 <button onClick={() => setSelectedMesaComanda(null)} style={{ background: '#d4af37', color: '#000', border: 'none', padding: '1rem', borderRadius: '12px', fontWeight: 800, cursor: 'pointer', width: '100%', boxShadow: '0 10px 20px -5px rgba(212,175,55,0.3)' }}>
 
                    ENTENDIDO, FECHAR
 

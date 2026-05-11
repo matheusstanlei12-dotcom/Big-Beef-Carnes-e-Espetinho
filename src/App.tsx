@@ -32,7 +32,7 @@ const RootRedirect = () => {
         <div className="animate-spin" style={{ 
           width: '40px', 
           height: '40px', 
-          border: '3px solid rgba(220, 38, 38, 0.1)', 
+          border: '3px solid rgba(212, 175, 55, 0.1)', 
           borderTop: '3px solid var(--primary-color)', 
           borderRadius: '50%' 
         }}></div>

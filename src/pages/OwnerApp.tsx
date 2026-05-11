@@ -1841,9 +1841,9 @@ export const Dono = () => {
 
             value={`R$ ${formatCurrency(faturamento)}`} 
 
-            icon={<TrendingUp size={24} color="#dc2626" />} 
+            icon={<TrendingUp size={24} color="#d4af37" />} 
 
-            color="#dc2626" 
+            color="#d4af37" 
 
             trend="Faturamento total" 
 
@@ -2825,7 +2825,7 @@ export const Dono = () => {
 
         <div className="d-flex gap-2">
 
-          <button className="btn-outline" onClick={handleGenerateAllPDFs} style={{ width: 'auto', borderColor: '#dc2626', color: '#dc2626' }}>
+          <button className="btn-outline" onClick={handleGenerateAllPDFs} style={{ width: 'auto', borderColor: '#d4af37', color: '#d4af37' }}>
 
             Imprimir Todos QR Codes
 
@@ -2881,7 +2881,7 @@ export const Dono = () => {
 
         <div className="grid gap-4 mb-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))' }}>
 
-          <KPIItem title="⭐ Média Atendimento" value={avgAtend} icon={<UsersIcon size={20} color="#dc2626"/>} color="#dc2626" trend="Geral" />
+          <KPIItem title="⭐ Média Atendimento" value={avgAtend} icon={<UsersIcon size={20} color="#d4af37"/>} color="#d4af37" trend="Geral" />
 
           <KPIItem title="🍱 Média Comida" value={avgComida} icon={<Utensils size={20} color="#10b981"/>} color="#10b981" trend="Sabor" />
 
@@ -2907,7 +2907,7 @@ export const Dono = () => {
 
                 <div className="d-flex gap-3" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
 
-                   <span style={{ color: '#dc2626' }}>ATEND: {av.nota_atendimento}/5</span>
+                   <span style={{ color: '#d4af37' }}>ATEND: {av.nota_atendimento}/5</span>
 
                    <span style={{ color: '#10b981' }}>COMIDA: {av.nota_comida}/5</span>
 
@@ -3283,7 +3283,7 @@ export const Dono = () => {
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '2.5rem' }}>
 
-           <KPIItem title="Faturamento Total" value={`R$ ${formatCurrency(totalBruto)}`} icon={<TrendingUp color="#dc2626" />} color="#dc2626" trend="Total" />
+           <KPIItem title="Faturamento Total" value={`R$ ${formatCurrency(totalBruto)}`} icon={<TrendingUp color="#d4af37" />} color="#d4af37" trend="Total" />
 
            <KPIItem title="Consumo Real" value={`R$ ${formatCurrency(totalLiquido)}`} icon={<Package color="#10b981" />} color="#10b981" trend="Vendas" />
 
@@ -3629,7 +3629,7 @@ export const Dono = () => {
 
                                 <div style={{ background: 'rgba(212,175,55,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
 
-                                    <Folder size={isMobile ? 20 : 24} color="#dc2626" fill="rgba(212,175,55,0.1)" />
+                                    <Folder size={isMobile ? 20 : 24} color="#d4af37" fill="rgba(212,175,55,0.1)" />
 
                                 </div>
 
@@ -3681,7 +3681,7 @@ export const Dono = () => {
 
                                     const diferenca = t.status === 'fechado' ? declarado - esperado : 0;
 
-                                    const statusColor = Math.abs(diferenca) < 0.1 ? '#10b981' : diferenca > 0 ? '#dc2626' : '#ef4444';
+                                    const statusColor = Math.abs(diferenca) < 0.1 ? '#10b981' : diferenca > 0 ? '#d4af37' : '#ef4444';
 
                                     const totalOS = t.pedidos?.reduce((acc: number, p: any) => acc + Number(p.total), 0) || 0;
 
@@ -4029,7 +4029,7 @@ export const Dono = () => {
 
                                 <div style={{ background: 'rgba(212,175,55,0.1)', padding: isMobile ? '8px' : '10px', borderRadius: '10px' }}>
 
-                                    <HistoryIcon size={isMobile ? 20 : 24} color="#dc2626" />
+                                    <HistoryIcon size={isMobile ? 20 : 24} color="#d4af37" />
 
                                 </div>
 
@@ -4829,7 +4829,7 @@ export const Dono = () => {
 
             }}
 
-            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,175,55,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#dc2626'; }}
+            onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = 'rgba(212,175,55,0.08)'; (e.currentTarget as HTMLButtonElement).style.color = '#d4af37'; }}
 
             onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = 'none'; (e.currentTarget as HTMLButtonElement).style.color = 'rgba(255,255,255,0.45)'; }}
 
@@ -5444,5 +5444,4 @@ export const Dono = () => {
   );
 
 };
-
 
