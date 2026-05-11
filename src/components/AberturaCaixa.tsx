@@ -64,7 +64,7 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
           maxWidth: '450px',
           background: 'rgba(255, 255, 255, 0.03)',
           backdropFilter: 'blur(12px)',
-          border: '1px solid rgba(212, 175, 55, 0.2)',
+          border: '1px solid rgba(220, 38, 38, 0.2)',
           borderRadius: '24px',
           padding: '2.5rem',
           textAlign: 'center',
@@ -74,13 +74,13 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
         <div style={{
           width: '70px',
           height: '70px',
-          background: 'rgba(212, 175, 55, 0.1)',
+          background: 'rgba(220, 38, 38, 0.1)',
           borderRadius: '20px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 1.5rem',
-          color: '#d4af37'
+          color: '#dc2626'
         }}>
           <Lock size={32} />
         </div>
@@ -97,7 +97,7 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
           <label style={{
             fontSize: '0.7rem',
             fontWeight: 800,
-            color: '#d4af37',
+            color: '#dc2626',
             letterSpacing: '1px',
             display: 'block',
             marginBottom: '8px'
@@ -134,7 +134,7 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#d4af37'}
+              onFocus={(e) => e.target.style.borderColor = '#dc2626'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(212,175,55,0.3)'}
             />
           </div>
@@ -166,7 +166,7 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
           onClick={handleAbrirCaixa}
           style={{
             width: '100%',
-            background: 'linear-gradient(135deg, #d4af37 0%, #b8962e 100%)',
+            background: 'linear-gradient(135deg, #dc2626 0%, #b8962e 100%)',
             color: '#000',
             border: 'none',
             borderRadius: '16px',
@@ -178,7 +178,7 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '12px',
-            boxShadow: '0 10px 20px -5px rgba(212, 175, 55, 0.3)',
+            boxShadow: '0 10px 20px -5px rgba(220, 38, 38, 0.3)',
             opacity: loading ? 0.7 : 1
           }}
         >
@@ -203,3 +203,4 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
     </div>
   );
 };
+

@@ -65,7 +65,7 @@ button { cursor: pointer; border: none; background: none; font-size: 1rem; }
 .input-field:focus {
   border-color: var(--primary-color);
   background-color: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.2);
 }
 
 /* Fix para selects e options no tema escuro */
@@ -224,7 +224,7 @@ h1, h2, h3, h4 { color: #fff; margin-bottom: 0.5rem; font-weight: 700; }
   cursor: pointer;
 }
 .sidebar-item:hover { background-color: var(--surface-hover); color: var(--primary-color); }
-.sidebar-item.active { background-color: rgba(212, 175, 55, 0.1); color: var(--primary-color); border: 1px solid rgba(212, 175, 55, 0.2); }
+.sidebar-item.active { background-color: rgba(220, 38, 38, 0.1); color: var(--primary-color); border: 1px solid rgba(220, 38, 38, 0.2); }
 
 .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
 .sidebar-logo { padding: 1rem; margin-bottom: 2rem; }
@@ -288,10 +288,11 @@ h1, h2, h3, h4 { color: #fff; margin-bottom: 0.5rem; font-weight: 700; }
   border-radius: 10px;
 }
 .card-slider::-webkit-scrollbar-thumb {
-  background: rgba(212, 175, 55, 0.2);
+  background: rgba(220, 38, 38, 0.2);
   border-radius: 10px;
 }
 .card-slider::-webkit-scrollbar-thumb:hover {
-  background: rgba(212, 175, 55, 0.4);
+  background: rgba(220, 38, 38, 0.4);
 }
+
 

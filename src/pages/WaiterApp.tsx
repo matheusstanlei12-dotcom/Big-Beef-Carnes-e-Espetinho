@@ -644,7 +644,7 @@ export const Garcom = () => {
 
                       {items.length > 0 && (
 
-                        <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(212, 175, 55, 0.1)' }}>
+                        <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(220, 38, 38, 0.1)' }}>
 
                           {items.map(it => (
 

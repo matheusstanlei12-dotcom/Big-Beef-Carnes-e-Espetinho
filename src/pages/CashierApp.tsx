@@ -1502,7 +1502,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                     {false && (
 
-                      <div className="card mb-4" style={{ padding: '1rem', border: '1px solid var(--primary-color)', background: 'rgba(212, 175, 55, 0.05)' }}>
+                      <div className="card mb-4" style={{ padding: '1rem', border: '1px solid var(--primary-color)', background: 'rgba(220, 38, 38, 0.05)' }}>
 
                          <h4 className="mb-3" style={{ fontSize: '0.8rem', color: 'var(--primary-color)' }}>DIVISíO POR PESSOA</h4>
 
@@ -1660,7 +1660,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                              { id: 'dinheiro', label: 'DINHEIRO', color: '#10b981' },
 
-                             { id: 'pix', label: 'PIX', color: '#d4af37' },
+                             { id: 'pix', label: 'PIX', color: '#dc2626' },
 
                              { id: 'debito', label: 'DÉBITO', color: '#fff' },
 
@@ -1834,7 +1834,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                        {pagamentos.map((p, i) => (
 
-                         <div key={i} className="d-flex justify-between items-center p-2 rounded-lg mb-2" style={{ background: 'rgba(255,255,255,0.05)', borderLeft: `4px solid ${p.method === 'dinheiro' ? '#10b981' : '#d4af37'}` }}>
+                         <div key={i} className="d-flex justify-between items-center p-2 rounded-lg mb-2" style={{ background: 'rgba(255,255,255,0.05)', borderLeft: `4px solid ${p.method === 'dinheiro' ? '#10b981' : '#dc2626'}` }}>
 
                             <div className="d-flex flex-col">
 

@@ -29,3 +29,4 @@ if (typeof window !== 'undefined') {
   (window as any).supabase = supabase;
 }
 
+

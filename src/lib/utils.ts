@@ -6,3 +6,4 @@ export const formatCurrency = (val: number | string) => {
     maximumFractionDigits: 2,
   }).format(num);
 };
+

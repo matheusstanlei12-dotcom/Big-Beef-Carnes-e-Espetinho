@@ -166,11 +166,11 @@ export const CustomerApp = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'contain' }} />
           <div>
-            <h2 style={{ fontSize: '1.1rem', margin: 0, color: '#d4af37', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.1 }}>Big Bifee</h2>
+            <h2 style={{ fontSize: '1.1rem', margin: 0, color: '#dc2626', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.1 }}>Big Bifee</h2>
             <div style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 600, marginTop: '2px', opacity: 0.8 }}>MESA {mesaNum}</div>
           </div>
         </div>
-        <div className="mobile-hide" style={{ border: '1px solid rgba(212, 175, 55, 0.5)', padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(212, 175, 55, 0.05)' }}>
+        <div className="mobile-hide" style={{ border: '1px solid rgba(220, 38, 38, 0.5)', padding: '6px 10px', borderRadius: '8px', backgroundColor: 'rgba(220, 38, 38, 0.05)' }}>
            <span style={{ fontSize: '0.6rem', color: 'var(--primary-color)', fontWeight: 800, letterSpacing: '0.5px' }}>CARDÁPIO DIGITAL</span>
         </div>
       </header>
@@ -195,7 +195,7 @@ export const CustomerApp = () => {
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0, 
         backgroundColor: 'rgba(26, 26, 26, 0.95)',
-        borderTop: '1px solid rgba(212, 175, 55, 0.1)', 
+        borderTop: '1px solid rgba(220, 38, 38, 0.1)', 
         padding: '0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom))',
         display: 'flex', justifyContent: 'space-around', alignItems: 'center', 
         zIndex: 1000,
@@ -219,7 +219,7 @@ export const CustomerApp = () => {
           alignItems: 'center',
           justifyContent: 'center',
           marginTop: '-30px',
-          boxShadow: '0 8px 20px rgba(212, 175, 55, 0.3)',
+          boxShadow: '0 8px 20px rgba(220, 38, 38, 0.3)',
           border: '4px solid #121212'
         }}>
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
@@ -240,3 +240,4 @@ export const CustomerApp = () => {
     </div>
   );
 };
+
