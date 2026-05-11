@@ -2299,7 +2299,7 @@ export const Dono = () => {
 
                  <Bar dataKey="gastos" name="Despesas" fill="#ef4444" radius={[6, 6, 0, 0]} barSize={25} />
 
-                 <Line type="monotone" dataKey="lucro" name="Lucro Líquido" stroke="var(--primary-color)" strokeWidth={4} dot={{ r: 5, fill: 'var(--primary-color)', strokeWidth: 2, stroke: '#000' }} />
+                 <Line type="monotone" dataKey="lucro" name="Lucro Líquido" stroke="#eab308" strokeWidth={4} dot={{ r: 5, fill: '#eab308', strokeWidth: 2, stroke: '#000' }} />
 
                </ComposedChart>
 
@@ -5444,5 +5444,6 @@ export const Dono = () => {
   );
 
 };
+
 
 
