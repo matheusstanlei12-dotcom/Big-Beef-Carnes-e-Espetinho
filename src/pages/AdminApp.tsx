@@ -282,7 +282,7 @@ export const Administracao = () => {
 
         // Borda externa dourada (espessa)
 
-        doc.setDrawColor(212, 175, 55); 
+        doc.setDrawColor(220, 38, 38); 
 
         doc.setLineWidth(1.5);
 
@@ -296,7 +296,7 @@ export const Administracao = () => {
 
         // Título Principal
 
-        doc.setTextColor(212, 175, 55); 
+        doc.setTextColor(220, 38, 38); 
 
         doc.setFontSize(18); 
 
@@ -306,7 +306,7 @@ export const Administracao = () => {
 
         // Linha divisória ornamental
 
-        doc.setDrawColor(212, 175, 55);
+        doc.setDrawColor(220, 38, 38);
 
         doc.setLineWidth(0.5);
 
@@ -314,7 +314,7 @@ export const Administracao = () => {
 
         // Fundo da Mesa (Pílula dourada)
 
-        doc.setFillColor(212, 175, 55); 
+        doc.setFillColor(220, 38, 38); 
 
         doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
 
@@ -332,7 +332,7 @@ export const Administracao = () => {
 
         doc.setFillColor(255, 255, 255);
 
-        doc.setDrawColor(212, 175, 55);
+        doc.setDrawColor(220, 38, 38);
 
         doc.setLineWidth(0.5);
 
@@ -362,7 +362,7 @@ export const Administracao = () => {
 
         doc.text('para o QR Code acima.', 52.5, 132, { align: 'center' });
 
-        doc.save(`ResenhaMoura_Mesa_${numero}.pdf`);
+        doc.save(`BigBifee_Mesa_${numero}.pdf`);
 
       };
 
@@ -406,23 +406,23 @@ export const Administracao = () => {
 
             doc.setFillColor(252, 252, 252); doc.rect(0, 0, 105, 148, 'F');
 
-            doc.setDrawColor(212, 175, 55); doc.setLineWidth(1.5); doc.rect(5, 5, 95, 138);
+            doc.setDrawColor(220, 38, 38); doc.setLineWidth(1.5); doc.rect(5, 5, 95, 138);
 
             doc.setLineWidth(0.3); doc.rect(7, 7, 91, 134);
 
-            doc.setTextColor(212, 175, 55); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
+            doc.setTextColor(220, 38, 38); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
 
             doc.text('Big Bifee', 52.5, 23, { align: 'center' });
 
-            doc.setDrawColor(212, 175, 55); doc.setLineWidth(0.5); doc.line(30, 27, 75, 27);
+            doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.5); doc.line(30, 27, 75, 27);
 
-            doc.setFillColor(212, 175, 55); doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
+            doc.setFillColor(220, 38, 38); doc.roundedRect(32.5, 33, 40, 11, 4, 4, 'F');
 
             doc.setTextColor(255, 255, 255); doc.setFontSize(16); doc.setFont('helvetica', 'bold');
 
             doc.text(`MESA ${m.numero}`, 52.5, 40.5, { align: 'center' });
 
-            doc.setFillColor(255, 255, 255); doc.setDrawColor(212, 175, 55); doc.setLineWidth(0.5);
+            doc.setFillColor(255, 255, 255); doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.5);
 
             doc.roundedRect(24, 52, 57, 57, 4, 4, 'FD');
 
@@ -458,7 +458,7 @@ export const Administracao = () => {
 
       }
 
-      doc.save(`ResenhaMoura_Todas_Mesas.pdf`);
+      doc.save(`BigBifee_Todas_Mesas.pdf`);
 
     });
 
