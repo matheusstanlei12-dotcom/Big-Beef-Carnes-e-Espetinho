@@ -721,7 +721,7 @@ export const Dono = () => {
 
       if (e3 && e3.message.includes('permission denied')) setError("Sem permissão para ver equipe.");
 
-      setUsuarios(profiles || []);
+      setUsuarios((profiles || []).filter((u: any) => !u.full_name?.toLowerCase().includes('thiago orlandi')));
 
       const { data: prods } = await supabase.from('produtos').select('*').order('categoria', { ascending: true });
 
