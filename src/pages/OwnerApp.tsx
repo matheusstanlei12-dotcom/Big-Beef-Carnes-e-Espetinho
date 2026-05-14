@@ -657,32 +657,27 @@ export const Dono = () => {
 
     try {
 
-      const today = new Date();
-
-      today.setHours(0, 0, 0, 0);
-
+      const now = new Date();
+      const today = new Date(now);
+      // Se for entre meia-noite e 6 da manhã, considera que o "dia" começou ontem às 06:00
+      if (now.getHours() < 6) {
+        today.setDate(today.getDate() - 1);
+      }
+      today.setHours(6, 0, 0, 0);
       const todayStart = today.toISOString();
 
-      const startOfMonth = new Date();
-
-      startOfMonth.setDate(1);
-
-      startOfMonth.setHours(0, 0, 0, 0);
-
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
       const startOfMonthISO = startOfMonth.toISOString();
 
       const { data: allFinalizadosStatus } = await supabase.from('pedidos')
-
-        .select('total')
-
+        .select('total, finalizado_at, data_hora')
         .eq('status', 'finalizado')
-
-        .gte('finalizado_at', startOfMonthISO)
-
-        .limit(10000);
+        // Buscamos pedidos que foram finalizados OU criados no mês atual para não perder nada
+        .or(`finalizado_at.gte.${startOfMonthISO},and(finalizado_at.is.null,data_hora.gte.${startOfMonthISO})`)
+        .order('data_hora', { ascending: false })
+        .limit(20000);
 
       const revTotal = allFinalizadosStatus?.reduce((acc, p) => acc + Number(p.total), 0) || 0;
-
       setFaturamento(revTotal);
 
       // Buscar gastos do mês atual
@@ -700,14 +695,11 @@ export const Dono = () => {
       // Vou usar o estado 'gastos' que já existe para o filtro do mês atual.
 
       const { data: pFinalizadosHoje } = await supabase.from('pedidos')
-
-        .select('total')
-
+        .select('total, finalizado_at, data_hora')
         .eq('status', 'finalizado')
-
-        .gte('finalizado_at', todayStart)
-
-        .limit(5000);
+        .or(`finalizado_at.gte.${todayStart},and(finalizado_at.is.null,data_hora.gte.${todayStart})`)
+        .order('data_hora', { ascending: false })
+        .limit(10000);
 
       setFaturamentoHoje(pFinalizadosHoje?.reduce((acc, p) => acc + Number(p.total), 0) || 0);
 
@@ -1594,21 +1586,17 @@ export const Dono = () => {
             if (type === 'CARTAO' || type === 'CARTíO') key = 'CARTí•ES ANTIGOS';
 
             if (groups[key]) {
+              const orderDate = new Date(order.finalizado_at || order.data_hora).toISOString().split('T')[0];
+              const matchesDate = !filterDate || orderDate === filterDate;
+              
+              const matchesSearch = !detailSearch || 
+                (order.cliente_nome?.toLowerCase().includes(detailSearch.toLowerCase())) ||
+                (order.mesas?.numero?.toString().includes(detailSearch)) ||
+                (order.id?.toLowerCase().includes(detailSearch.toLowerCase()));
 
-               const matchesSearch = !detailSearch || 
-
-                 (order.cliente_nome?.toLowerCase().includes(detailSearch.toLowerCase())) ||
-
-                 (order.mesas?.numero?.toString().includes(detailSearch)) ||
-
-                 (order.id?.toLowerCase().includes(detailSearch.toLowerCase()));
-
-               if (matchesSearch && !groups[key].find((o: any) => o.id === order.id)) {
-
-                 groups[key].push(order);
-
-               }
-
+              if (matchesSearch && matchesDate && !groups[key].find((o: any) => o.id === order.id)) {
+                groups[key].push(order);
+              }
             }
 
           }
@@ -1620,14 +1608,12 @@ export const Dono = () => {
     });
 
     Object.keys(groups).forEach(key => {
-
       groups[key].sort((a, b) => new Date(b.finalizado_at || b.data_hora).getTime() - new Date(a.finalizado_at || a.data_hora).getTime());
-
     });
 
     return groups;
 
-  }, [historicoCompleto]);
+  }, [historicoCompleto, detailSearch, filterDate]);
 
   const dynamicChartData = useMemo(() => {
 

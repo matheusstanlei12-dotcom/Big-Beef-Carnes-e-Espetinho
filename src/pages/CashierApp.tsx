@@ -349,21 +349,19 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
         .eq('status', 'finalizado');
 
       if (currentTurnoId) {
-
         query = query.eq('turno_id', currentTurnoId);
-
       } else {
-
-        const today = new Date();
-
-        today.setHours(0, 0, 0, 0);
-
+        const now = new Date();
+        const today = new Date(now);
+        // Se for entre meia-noite e 6 da manhã, considera que o "dia" começou ontem às 06:00
+        if (now.getHours() < 6) {
+          today.setDate(today.getDate() - 1);
+        }
+        today.setHours(6, 0, 0, 0);
         query = query.gte('finalizado_at', today.toISOString());
-
       }
 
-      const { data: historico } = await query.order('finalizado_at', { ascending: false }).limit(2000);
-
+      const { data: historico } = await query.order('finalizado_at', { ascending: false }).limit(5000);
       setHistoricoVendas(historico || []);
 
       // 3. Produtos para Venda de Balcão
