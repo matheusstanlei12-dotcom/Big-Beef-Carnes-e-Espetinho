@@ -78,11 +78,12 @@ export const Producao = () => {
     'PETISCO', 'PETISCOS', 'LANCHES', 'LANCHE', 'PORÇÕES', 'PORCOES', 
     'PORÇÃO', 'PORCAO', 'COZINHA', 'PRATOS', 'PRATO', 'REFEIÇÕES', 
     'REFEICOES', 'ENTRADAS', 'SOBREMESAS', 'SOBREMESA', 'PIZZA', 'BURGER',
-    'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA', 'OUTROS'
+    'OUTROS'
   ];
   const CATS_BAR = [
     'COQUETÉIS', 'COQUITEIS', 'COQUETEIS', 'DRINKS', 'DRINK', 
-    'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS'
+    'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS',
+    'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA'
   ];
   const NAMES_BAR_FALLBACK = [
     "caipirinha cachaça", "caipivodka smirnoff", "caipivodka absolut",
@@ -244,7 +245,7 @@ export const Producao = () => {
           }}
           onClick={() => setFilter('bar')}
         >
-          🍹 Coquetéis
+          🍹 Bar / Bebidas
           {pendentesBar > 0 && (
             <span style={{ position: 'absolute', top: '-10px', right: '-10px', background: 'var(--danger-color)', color: 'white', borderRadius: '50%', width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', border: '2px solid #000', boxShadow: '0 4px 10px rgba(0,0,0,0.5)' }}>
               {pendentesBar}

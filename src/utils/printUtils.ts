@@ -262,7 +262,6 @@ export const printContaMesa = (
 
   const html = `
     <h2>Big Bifee</h2>
-    <div class="text-center bold" style="font-size:12px;">★AQUI A RESENHA É DE VERDADE★</div>
     <div class="text-center mb-5" style="font-size:8px; margin-top:2px;">CNPJ: 42.418.207/0001-20</div>
     <div class="divider"></div>
     <div class="flex-between" style="font-size:11px;">

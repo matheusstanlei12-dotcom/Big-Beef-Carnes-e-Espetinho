@@ -1507,21 +1507,21 @@ export const Dono = () => {
 
         if (!p.forma_pagamento) return;
 
-        const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+        const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
         if (matches) {
 
           matches.forEach((m: string) => {
 
-            const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+            const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
-            const valMatch = m.match(/R\$([0-9.]+)/);
+            const valMatch = m.match(/R\$([0-9.,]+)/);
 
             if (typeMatch && valMatch) {
 
               const type = typeMatch[1].toUpperCase();
 
-              const val = parseFloat(valMatch[1]);
+              const val = parseFloat(valMatch[1].replace(',', '.'));
 
               if (type === 'PIX') totals.pix += val;
 
@@ -1567,13 +1567,13 @@ export const Dono = () => {
 
       if (!order.forma_pagamento) return;
 
-      const matches = order.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+      const matches = order.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
           if (typeMatch) {
 
@@ -3263,7 +3263,7 @@ export const Dono = () => {
 
           });
 
-          doc.save(`Rendimentos_Resenha_${Date.now()}.pdf`);
+          doc.save(`Rendimentos_BigBifee_${Date.now()}.pdf`);
 
        });
 
@@ -3345,21 +3345,21 @@ export const Dono = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
-          const valMatch = m.match(/R\$([0-9.]+)/);
+          const valMatch = m.match(/R\$([0-9.,]+)/);
 
           if (typeMatch && valMatch) {
 
             const type = typeMatch[1].toUpperCase();
 
-            const val = parseFloat(valMatch[1]);
+            const val = parseFloat(valMatch[1].replace(',', '.'));
 
             if (type === 'PIX') totals.pix += val;
 
@@ -3403,21 +3403,21 @@ export const Dono = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
-          const valMatch = m.match(/R\$([0-9.]+)/);
+          const valMatch = m.match(/R\$([0-9.,]+)/);
 
           if (typeMatch && valMatch) {
 
             const type = typeMatch[1].toUpperCase();
 
-            const val = parseFloat(valMatch[1]);
+            const val = parseFloat(valMatch[1].replace(',', '.'));
 
             if (type === 'PIX') totals.pix += val;
 
@@ -3673,9 +3673,9 @@ export const Dono = () => {
 
                                     const esperado = fundo + (t.pedidos?.filter((p: any) => p.forma_pagamento?.includes('DINHEIRO')).reduce((acc: number, p: any) => {
 
-                                        const match = p.forma_pagamento?.match(/DINHEIRO\s*\(R\$([0-9.]+)\)/i);
+                                        const match = p.forma_pagamento?.match(/DINHEIRO\s*\(R\$([0-9.,]+)\)/i);
 
-                                        return acc + (match ? parseFloat(match[1]) : 0);
+                                        return acc + (match ? parseFloat(match[1].replace(',', '.')) : 0);
 
                                     }, 0) || 0);
 
@@ -3935,13 +3935,13 @@ export const Dono = () => {
 
           const typeMatch = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO)/i);
 
-          const valMatch = p.forma_pagamento.match(/R\$([0-9.]+)/);
+          const valMatch = p.forma_pagamento.match(/R\$([0-9.,]+)/);
 
           if (typeMatch && valMatch) {
 
             const type = typeMatch[1].toUpperCase();
 
-            const v = parseFloat(valMatch[1]);
+            const v = parseFloat(valMatch[1].replace(',', '.'));
 
             if (type === 'PIX') groups[monthStr].payments.pix += v;
 

@@ -690,21 +690,21 @@ export const Administracao = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
-          const valMatch = m.match(/R\$([0-9.]+)/);
+          const valMatch = m.match(/R\$([0-9.,]+)/);
 
           if (typeMatch && valMatch) {
 
             const type = typeMatch[1].toUpperCase();
 
-            const val = parseFloat(valMatch[1]);
+            const val = parseFloat(valMatch[1].replace(',', '.'));
 
             if (type === 'PIX') totals.pix += val;
 

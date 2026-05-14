@@ -278,9 +278,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
            'PORÇÃO', 'PORCAO', 'COZINHA', 'PRATOS', 'PRATO', 'REFEIÇÕES', 
 
-           'REFEICOES', 'ENTRADAS', 'SOBREMESAS', 'SOBREMESA', 'PIZZA', 'BURGER',
-
-           'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA'
+           'REFEICOES', 'ENTRADAS', 'SOBREMESAS', 'SOBREMESA', 'PIZZA', 'BURGER'
 
          ];
 
@@ -288,7 +286,9 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
            'COQUETÉIS', 'COQUITEIS', 'COQUETEIS', 'DRINKS', 'DRINK', 
 
-           'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS'
+           'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS',
+
+           'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA'
 
          ];
 
@@ -874,21 +874,21 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)\s*\(R\$([0-9.]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
 
-          const valMatch = m.match(/R\$([0-9.]+)/);
+          const valMatch = m.match(/R\$([0-9.,]+)/);
 
           if (typeMatch && valMatch) {
 
             const type = typeMatch[1].toUpperCase();
 
-            const val = parseFloat(valMatch[1]);
+            const val = parseFloat(valMatch[1].replace(',', '.'));
 
             if (type === 'PIX') totals.pix += val;
 
@@ -996,7 +996,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   const categories = ['TODOS', 'PETISCO', 'BEBIDAS', 'COQUETÉIS', 'DESTILADOS (DOSE)', 'OUTROS'];
 
-  if (loading) return <div className="layout-container d-flex justify-center items-center" style={{height: '100vh', background: 'transparent', color: 'var(--primary-color)'}}>CARREGANDO CAIXA RESENHA...</div>;
+  if (loading) return <div className="layout-container d-flex justify-center items-center" style={{height: '100vh', background: 'transparent', color: 'var(--primary-color)'}}>CARREGANDO CAIXA...</div>;
 
   return (
 
