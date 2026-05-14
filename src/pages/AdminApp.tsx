@@ -230,7 +230,7 @@ export const Administracao = () => {
 
     }
 
-    const { data: historico } = await qHist.order('finalizado_at', { ascending: false });
+    const { data: historico } = await qHist.order('finalizado_at', { ascending: false }).limit(2000);
 
     setHistoricoVendas(historico || []);
 
@@ -632,6 +632,13 @@ export const Administracao = () => {
 
         await supabase.from('pedidos').update({ total: novoTotal }).eq('id', pId);
 
+        // Retornar item ao estoque
+        if (item.produto_id) {
+          const { data: prod } = await supabase.from('produtos').select('estoque').eq('id', item.produto_id).single();
+          if (prod) {
+            await supabase.from('produtos').update({ estoque: prod.estoque + item.quantidade }).eq('id', item.produto_id);
+          }
+        }
       }
 
       setItemParaExcluir(null);

@@ -362,7 +362,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
       }
 
-      const { data: historico } = await query.order('finalizado_at', { ascending: false });
+      const { data: historico } = await query.order('finalizado_at', { ascending: false }).limit(2000);
 
       setHistoricoVendas(historico || []);
 
@@ -543,6 +543,14 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
         const novoTotal = Math.max(0, Number(pedido.total) - (item.preco * item.quantidade));
 
         await supabase.from('pedidos').update({ total: novoTotal }).eq('id', item.pedido_id);
+
+        // Retornar item ao estoque
+        if (item.produto_id) {
+          const { data: prod } = await supabase.from('produtos').select('estoque').eq('id', item.produto_id).single();
+          if (prod) {
+            await supabase.from('produtos').update({ estoque: prod.estoque + item.quantidade }).eq('id', item.produto_id);
+          }
+        }
 
       }
 

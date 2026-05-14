@@ -50,7 +50,8 @@ export const GastosApp = () => {
         .from('gastos')
         .select('*, cartoes_gastos(*)')
         .gte('data_gasto', startOfMonth.toISOString())
-        .order('data_gasto', { ascending: false });
+        .order('data_gasto', { ascending: false })
+        .limit(2000);
         
       if (error) throw error;
       setGastos(data || []);

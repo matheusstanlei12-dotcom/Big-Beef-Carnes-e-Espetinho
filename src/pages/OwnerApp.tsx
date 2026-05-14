@@ -677,7 +677,9 @@ export const Dono = () => {
 
         .eq('status', 'finalizado')
 
-        .gte('finalizado_at', startOfMonthISO);
+        .gte('finalizado_at', startOfMonthISO)
+
+        .limit(10000);
 
       const revTotal = allFinalizadosStatus?.reduce((acc, p) => acc + Number(p.total), 0) || 0;
 
@@ -703,7 +705,9 @@ export const Dono = () => {
 
         .eq('status', 'finalizado')
 
-        .gte('finalizado_at', todayStart);
+        .gte('finalizado_at', todayStart)
+
+        .limit(5000);
 
       setFaturamentoHoje(pFinalizadosHoje?.reduce((acc, p) => acc + Number(p.total), 0) || 0);
 
@@ -789,7 +793,9 @@ export const Dono = () => {
 
         .eq('status', 'finalizado')
 
-        .order('finalizado_at', { ascending: false });
+        .order('finalizado_at', { ascending: false })
+
+        .limit(5000);
 
       setHistoricoCompleto(allFinalizados || []);
 
@@ -889,7 +895,7 @@ export const Dono = () => {
 
       setCartoes(cartoesData || []);
 
-      const { data: gastosData } = await supabase.from('gastos').select('*, cartoes_gastos(*)').order('data_gasto', { ascending: false });
+      const { data: gastosData } = await supabase.from('gastos').select('*, cartoes_gastos(*)').order('data_gasto', { ascending: false }).limit(5000);
 
       setGastos(gastosData || []);
 

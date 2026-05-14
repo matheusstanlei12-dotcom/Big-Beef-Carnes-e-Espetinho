@@ -39,4 +39,3 @@ Sistema completo de gestão para estabelecimentos, com foco em autoatendimento v
 Este projeto é de uso exclusivo para **Big Bifee**.
 
 ---
-*Aqui a resenha é de verdade!*
