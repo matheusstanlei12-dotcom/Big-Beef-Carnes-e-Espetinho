@@ -61,9 +61,9 @@ export const Garcom = () => {
   const [showTransferModal, setShowTransferModal] = useState(false);
 
   const [targetMesaId, setTargetMesaId] = useState<string>('');
-
-  const { items, addItem, removeItem, clearCart, checkout } = useCartStore();
-
+  const [selectedComandaId, setSelectedComandaId] = useState<string | null>(null);
+  const [clienteNome, setClienteNome] = useState('');
+  const { items, addItem, removeItem, clearCart, checkout, launchToExistingOrder } = useCartStore();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const fetchData = async () => {
@@ -455,27 +455,25 @@ export const Garcom = () => {
   const currentCartTotal = items.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
 
   const handleLaunchOrder = async () => {
-
     if (items.length === 0) return;
-
     setIsCheckingOut(true);
-
-    const success = await checkout(selectedMesa.id, profile?.id);
-
-    if (success) {
-
-      setShowAddMenu(false);
-
-      fetchData();
-
-    } else {
-
-      alert("Erro.");
-
+    let success = false;
+    
+    if (selectedComandaId === 'new') {
+        success = await checkout(selectedMesa.id, profile?.id, clienteNome);
+    } else if (selectedComandaId) {
+        success = await launchToExistingOrder(selectedComandaId);
     }
 
+    if (success) {
+      setShowAddMenu(false);
+      setSelectedComandaId(null);
+      setClienteNome('');
+      fetchData();
+    } else {
+      alert("Erro ao lançar pedido.");
+    }
     setIsCheckingOut(false);
-
   };
 
   const filteredProdutosAtendimento = useMemo(() => {
