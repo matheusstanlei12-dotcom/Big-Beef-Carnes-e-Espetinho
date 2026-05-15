@@ -265,10 +265,9 @@ export const printContaMesa = (
   const time = customTime || new Date().toLocaleTimeString('pt-BR');
 
   const html = `
-    <div style="text-align: center; margin-bottom: 8px;">
-      <img src="/logo.png" style="width: 60mm; height: auto; object-fit: contain;" />
+    <div style="text-align: center; margin-bottom: 5px;">
+      <img src="/header-template.png" style="width: 100%; height: auto;" />
     </div>
-    <div style="text-align: center; font-size: 13px; font-weight: 900; letter-spacing: 1px; margin-bottom: 3px;">BIG BEEF ESPETINHOS</div>
     <div class="divider"></div>
     <div class="flex-between" style="font-size:11px;">
       <span>Data: ${date}</span>
