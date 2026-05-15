@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+﻿import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 /**
@@ -38,4 +38,5 @@ export const OwnerViewBanner = ({ panelName }: { panelName: string }) => {
     </div>
   );
 };
+
 

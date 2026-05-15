@@ -140,8 +140,10 @@ export const printFechamentoZ = (
   const status = diferenca === 0 ? 'CONFERE ✓' : diferenca > 0 ? `SOBRA: R$ ${diferenca.toFixed(2)}` : `QUEBRA: R$ ${Math.abs(diferenca).toFixed(2)}`;
 
   const html = `
-    <h2>Big Bifee</h2>
-    <div class="text-center mb-5" style="font-size:10px;">CNPJ: 42.418.207/0001-20</div>
+    <div style="text-align: center; margin-bottom: 5px;">
+      <img src="/header-template.png" style="width: 100%; height: auto;" />
+    </div>
+    <div class="divider"></div>
     <h3>LEITURA-Z / FECHAMENTO</h3>
     <div class="text-center bold mb-5">O.S. Nº: ${osNumber || '---'}</div>
     
@@ -239,7 +241,7 @@ export const printFechamentoZ = (
     
     <div class="text-center" style="font-size: 10px; opacity: 0.8; margin-top: 20px;">
       Documento gerado automaticamente.<br/>
-      Big Bifee
+      Big Beef
     </div>
     
     <!-- Espaço extra para cortar o papel corretamente -->
@@ -252,17 +254,20 @@ export const printFechamentoZ = (
 export const printContaMesa = (
   mesaNumero: string | null,
   itens: Array<{ nome: string; quantidade: number; preco: number }>,
-  incluirTaxa: boolean
+  incluirTaxa: boolean,
+  customDate?: string,
+  customTime?: string
 ) => {
   const subtotal = itens.reduce((acc, i) => acc + i.preco * i.quantidade, 0);
   const total = subtotal;
   
-  const date = new Date().toLocaleDateString('pt-BR');
-  const time = new Date().toLocaleTimeString('pt-BR');
+  const date = customDate || new Date().toLocaleDateString('pt-BR');
+  const time = customTime || new Date().toLocaleTimeString('pt-BR');
 
   const html = `
-    <h2>Big Bifee</h2>
-    <div class="text-center mb-5" style="font-size:8px; margin-top:2px;">CNPJ: 42.418.207/0001-20</div>
+    <div style="text-align: center; margin-bottom: 5px;">
+      <img src="/header-template.png" style="width: 100%; height: auto;" />
+    </div>
     <div class="divider"></div>
     <div class="flex-between" style="font-size:11px;">
       <span>Data: ${date}</span>
@@ -311,4 +316,5 @@ export const printContaMesa = (
 
   silentPrint(html);
 };
+
 

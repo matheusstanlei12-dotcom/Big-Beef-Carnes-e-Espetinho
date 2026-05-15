@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+﻿import { useState, useMemo, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -232,7 +232,7 @@ export const FechamentoCaixa = ({ historicoVendas, paymentTotals, onRefresh, onC
         localStorage.removeItem('movimentacoes_caixa');
         
         if (onClose) onClose();
-        // Não chamamos signOut() aqui para manter o usurio logado, apenas voltamos para "Iniciar Jornada"
+        // Não chamamos signOut() aqui para manter o usuário logado, apenas voltamos para "Iniciar Jornada"
         
       } catch (err: any) {
         alert('Erro ao fechar turno no banco: ' + err.message);
@@ -299,7 +299,7 @@ export const FechamentoCaixa = ({ historicoVendas, paymentTotals, onRefresh, onC
         ))}
       </div>
 
-      {/* Total + Ticket Médio - Somente gestáor */}
+      {/* Total + Ticket Médio - Somente gestor */}
       {isGestor && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
           <div style={{ ...cardStyle('212,175,55'), gridColumn: 'span 2' }}>
@@ -325,7 +325,7 @@ export const FechamentoCaixa = ({ historicoVendas, paymentTotals, onRefresh, onC
         </div>
       )}
 
-      {/* Movimentações - Somente gestáor */}
+      {/* Movimentações - Somente gestor */}
       {isGestor && (
         <>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
@@ -520,4 +520,5 @@ export const FechamentoCaixa = ({ historicoVendas, paymentTotals, onRefresh, onC
     </div>
   );
 };
+
 

@@ -1,4 +1,4 @@
-
+﻿
 import { supabase } from './lib/supabase';
 
 async function checkDeletions() {
@@ -16,3 +16,4 @@ async function checkDeletions() {
 }
 
 checkDeletions();
+

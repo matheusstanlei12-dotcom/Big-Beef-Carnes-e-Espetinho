@@ -19,22 +19,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
 
   TrendingUp, TrendingDown, Users as UsersIcon, Package, Utensils, 
-
   Clock, Star, LogOut, LayoutDashboard,
-
   PieChart as PieIcon, LayoutGrid,
-
   QrCode, Banknote, CreditCard, Lock, History as HistoryIcon,
-
   ChevronDown, ChevronUp, Folder, FileText, Trash2, Search, Plus, CreditCard as CreditCardIcon,
-
-  Zap, BarChart3, Check, Menu, X
-
+  Zap, BarChart3, Check, Menu, X, ChevronRight, FileText as FileTextIcon
 } from 'lucide-react';
 
 import { FechamentoCaixa } from '../components/FechamentoCaixa';
 
-type TabType = 'dashboard' | 'usuarios' | 'produtos' | 'mesas' | 'avaliacoes' | 'comandas' | 'caixa' | 'ganhos_mensais' | 'gastos_mensais';
+type TabType = 'dashboard' | 'usuarios' | 'produtos' | 'mesas' | 'avaliacoes' | 'comandas' | 'caixa' | 'ganhos_mensais' | 'gastos_mensais' | 'caixa_gestao';
 
 const COLORS = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4'];
 
@@ -497,6 +491,9 @@ export const Dono = () => {
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [caixaSearch, setCaixaSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -728,12 +725,9 @@ export const Dono = () => {
       setMesas(mses || []);
 
       const { data: rankingData } = await supabase.from('pedidos')
-
         .select('total, mesa_id, garcom_id, profiles:garcom_id(full_name, role)')
-
         .eq('status', 'finalizado')
-
-        .gte('finalizado_at', todayStart);
+        .or(`finalizado_at.gte.${todayStart},and(finalizado_at.is.null,data_hora.gte.${todayStart})`);
 
       if (rankingData) {
 
@@ -778,16 +772,13 @@ export const Dono = () => {
       setRecentOrders(recents || []);
 
       const { data: allFinalizados } = await supabase
-
         .from('pedidos')
-
-        .select('*, mesas(numero), itens_pedido(quantidade, preco_unitario, produtos(nome))')
-
+        .select('*, profiles:garcom_id(full_name), mesas(numero), itens_pedido(quantidade, preco_unitario, produtos(nome))')
         .eq('status', 'finalizado')
-
-        .order('finalizado_at', { ascending: false })
-
-        .limit(5000);
+        // Usar lógica robusta para não perder pedidos sem finalizado_at
+        .or(`finalizado_at.gte.${startOfMonthISO},and(finalizado_at.is.null,data_hora.gte.${startOfMonthISO})`)
+        .order('data_hora', { ascending: false })
+        .limit(10000);
 
       setHistoricoCompleto(allFinalizados || []);
 
@@ -833,37 +824,25 @@ export const Dono = () => {
 
       }
 
+      /* 
       const { data: prepData } = await supabase.from('itens_pedido').select('id, preparo_inicio_at, preparo_fim_at, produtos (nome)').not('preparo_inicio_at', 'is', null).not('preparo_fim_at', 'is', null);
-
       if (prepData) {
-
         const times: any = {};
-
         prepData.forEach((i: any) => {
-
           const name = i.produtos?.nome || 'Item Desconhecido';
-
           const start = new Date(i.preparo_inicio_at).getTime();
-
           const end = new Date(i.preparo_fim_at).getTime();
-
           const diffMinutes = (end - start) / (1000 * 60);
-
           if (!times[name]) times[name] = { name, total: 0, count: 0 };
-
           times[name].total += diffMinutes;
-
           times[name].count += 1;
-
         });
-
         setAvgPrepTimes(Object.values(times).map((t: any) => ({
-
           name: t.name, minutos: (t.total / t.count).toFixed(1)
-
         })).sort((a,b) => Number(b.minutos) - Number(a.minutos)).slice(0, 10));
-
       }
+      */
+      setAvgPrepTimes([]);
 
       const { data: pAtivos } = await supabase.from('pedidos')
 
@@ -1011,7 +990,7 @@ export const Dono = () => {
 
         doc.setFont('helvetica', 'bold');
 
-        doc.text('Big Bifee', 52.5, 23, { align: 'center' });
+        doc.text('Big Beef', 52.5, 23, { align: 'center' });
 
         // Linha divisória ornamental
 
@@ -1071,7 +1050,7 @@ export const Dono = () => {
 
         doc.text('para o QR Code acima.', 52.5, 132, { align: 'center' });
 
-        doc.save(`BigBifee_Mesa_${numero}.pdf`);
+        doc.save(`BigBeef_Mesa_${numero}.pdf`);
 
       };
 
@@ -1121,7 +1100,7 @@ export const Dono = () => {
 
             doc.setTextColor(220, 38, 38); doc.setFontSize(18); doc.setFont('helvetica', 'bold');
 
-            doc.text('Big Bifee', 52.5, 23, { align: 'center' });
+            doc.text('Big Beef', 52.5, 23, { align: 'center' });
 
             doc.setDrawColor(220, 38, 38); doc.setLineWidth(0.5); doc.line(30, 27, 75, 27);
 
@@ -1167,7 +1146,7 @@ export const Dono = () => {
 
       }
 
-      doc.save(`BigBifee_Todas_Mesas.pdf`);
+      doc.save(`BigBeef_Todas_Mesas.pdf`);
 
     });
 
@@ -1477,9 +1456,9 @@ export const Dono = () => {
 
     } catch (err: any) {
 
-      console.error("ERRO CRíTICO NA EXCLUSíƒO (DONO):", err);
+      console.error("ERRO CRí TICO NA EXCLUSíƒO (DONO):", err);
 
-      alert("⚠️ ï¸ FALHA NA EXCLUSíƒO:\n\n" + (err.message || 'Erro desconhecido. Verifique se a tabela de auditoria foi criada.'));
+      alert("⚠️ ï¸  FALHA NA EXCLUSíƒO:\n\n" + (err.message || 'Erro desconhecido. Verifique se a tabela de auditoria foi criada.'));
 
     } finally {
 
@@ -1505,13 +1484,13 @@ export const Dono = () => {
 
         if (!p.forma_pagamento) return;
 
-        const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
+        const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)\s*\(R\$([0-9.,]+)\)/gi);
 
         if (matches) {
 
           matches.forEach((m: string) => {
 
-            const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
+            const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)/i);
 
             const valMatch = m.match(/R\$([0-9.,]+)/);
 
@@ -1529,7 +1508,7 @@ export const Dono = () => {
 
               else if (type === 'CRÉDITO' || type === 'CREDITO') totals.credito += val;
 
-              else if (type === 'CARTAO' || type === 'CARTíO') totals.outrosCartoes += val;
+              else if (type === 'CARTAO' || type === 'CARTÃO') totals.outrosCartoes += val;
 
             }
 
@@ -1557,7 +1536,7 @@ export const Dono = () => {
 
       'CRÉDITO': [], 
 
-      'CARTí•ES ANTIGOS': [] 
+      'CARTÕES ANTIGOS': [] 
 
     };
 
@@ -1571,7 +1550,7 @@ export const Dono = () => {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)/i);
 
           if (typeMatch) {
 
@@ -1583,7 +1562,7 @@ export const Dono = () => {
 
             if (type === 'CREDITO') key = 'CRÉDITO';
 
-            if (type === 'CARTAO' || type === 'CARTíO') key = 'CARTí•ES ANTIGOS';
+            if (type === 'CARTAO' || type === 'CARTÃO') key = 'CARTÕES ANTIGOS';
 
             if (groups[key]) {
               const orderDate = new Date(order.finalizado_at || order.data_hora).toISOString().split('T')[0];
@@ -1957,7 +1936,7 @@ export const Dono = () => {
 
           <KPIItem 
 
-            title="CARTí•ES ANTIGOS" 
+            title="CARTÕES ANTIGOS" 
 
             value={`R$ ${formatCurrency(paymentTotals.outrosCartoes)}`} 
 
@@ -1967,7 +1946,7 @@ export const Dono = () => {
 
             trend="Legado" 
 
-            onClick={() => setSelectedPaymentDetail(selectedPaymentDetail === 'CARTí•ES ANTIGOS' ? null : 'CARTí•ES ANTIGOS')}
+            onClick={() => setSelectedPaymentDetail(selectedPaymentDetail === 'CARTÕES ANTIGOS' ? null : 'CARTÕES ANTIGOS')}
 
           />
 
@@ -2397,7 +2376,7 @@ export const Dono = () => {
 
         <h2 style={{ fontSize: isMobile ? '1.4rem' : '1.8rem', fontWeight: 800 }}>Gestão de Equipe ({usuarios.length})</h2>
 
-        <button className="btn-success" onClick={() => setShowNewUser(!showNewUser)} style={{ width: 'auto', padding: isMobile ? '8px 12px' : '1rem', fontSize: isMobile ? '0.8rem' : '1rem' }}>{showNewUser ? 'Cancelar' : '+ Cadastrar Usurio'}</button>
+        <button className="btn-success" onClick={() => setShowNewUser(!showNewUser)} style={{ width: 'auto', padding: isMobile ? '8px 12px' : '1rem', fontSize: isMobile ? '0.8rem' : '1rem' }}>{showNewUser ? 'Cancelar' : '+ Cadastrar Usuário'}</button>
 
       </div>
 
@@ -2587,6 +2566,8 @@ export const Dono = () => {
 
             <option value="PETISCO">PETISCO</option>
 
+            <option value="PORÇÕES">PORÇÕES</option>
+
             <option value="BEBIDAS">BEBIDAS</option>
 
             <option value="COQUETÉIS">COQUETÉIS</option>
@@ -2613,7 +2594,7 @@ export const Dono = () => {
 
           type="text" 
 
-          placeholder="ðŸ” Buscar no estoque (nome ou categoria)..." 
+          placeholder="🔍 Buscar no estoque (nome ou categoria)..." 
 
           value={searchTermEstoque} 
 
@@ -2909,11 +2890,11 @@ export const Dono = () => {
 
               </div>
 
-              {av.sugestáoes ? (
+              {av.sugestoes ? (
 
                 <p style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', fontStyle: 'italic', color: '#eee', margin: 0 }}>
 
-                  "{av.sugestáoes}"
+                  "{av.sugestoes}"
 
                 </p>
 
@@ -3223,7 +3204,7 @@ export const Dono = () => {
 
           const doc = new jsPDF();
 
-          doc.setFontSize(18); doc.text('Relatório de Rendimentos - Big Bifee', 105, 15, { align: 'center' });
+          doc.setFontSize(18); doc.text('Relatório de Rendimentos - Big Beef', 105, 15, { align: 'center' });
 
           doc.setFontSize(12); doc.text(`Data: ${new Date().toLocaleDateString()}`, 10, 25);
 
@@ -3255,7 +3236,7 @@ export const Dono = () => {
 
           });
 
-          doc.save(`Rendimentos_BigBifee_${Date.now()}.pdf`);
+          doc.save(`Rendimentos_BigBeef_${Date.now()}.pdf`);
 
        });
 
@@ -3337,13 +3318,13 @@ export const Dono = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)/i);
 
           const valMatch = m.match(/R\$([0-9.,]+)/);
 
@@ -3395,13 +3376,13 @@ export const Dono = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)\s*\(R\$([0-9.,]+)\)/gi);
 
       if (matches) {
 
         matches.forEach((m: string) => {
 
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)/i);
 
           const valMatch = m.match(/R\$([0-9.,]+)/);
 
@@ -3488,6 +3469,124 @@ export const Dono = () => {
       }
 
   }, [turnosHistorico]);
+
+  const renderCaixaGestao = () => {
+    return (
+      <div className="animate-fade-in" style={{ paddingBottom: '3rem' }}>
+        <div className="mb-8 d-flex justify-between items-center" style={{ flexDirection: isMobile ? 'column' : 'row', alignItems: isMobile ? 'flex-start' : 'center', gap: isMobile ? '1rem' : 0 }}>
+          <div>
+            <h2 style={{ fontSize: isMobile ? '1.5rem' : '2rem', fontWeight: 900, letterSpacing: '-0.5px' }}>Gestão de Caixa</h2>
+            <p className="text-muted" style={{ fontSize: isMobile ? '0.8rem' : '1rem' }}>Histórico estruturado por pastas (dias).</p>
+          </div>
+          <div style={{ position: 'relative', width: isMobile ? '100%' : '300px' }}>
+            <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+            <input 
+              type="text" 
+              placeholder="Pesquisar mesa ou item..." 
+              value={caixaSearch}
+              onChange={e => setCaixaSearch(e.target.value)}
+              style={{ width: '100%', padding: '10px 15px 10px 40px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '12px', color: '#fff', fontSize: '0.85rem' }}
+            />
+          </div>
+        </div>
+
+        {(() => {
+          const searchLower = caixaSearch.toLowerCase();
+          const filteredVendas = (historicoCompleto || []).filter(v => {
+            if (!caixaSearch) return true;
+            const mesaNum = v.mesas?.numero?.toString() || '';
+            const hasItem = v.itens_pedido?.some((it: any) => it.produtos?.nome?.toLowerCase().includes(searchLower));
+            return mesaNum.includes(caixaSearch) || hasItem;
+          });
+
+          const grouped = filteredVendas.reduce((acc: any, item) => {
+            const date = new Date(item.finalizado_at || item.data_hora).toLocaleDateString('pt-BR');
+            if (!acc[date]) acc[date] = [];
+            acc[date].push(item);
+            return acc;
+          }, {});
+
+          const days = Object.keys(grouped).sort((a, b) => {
+            const [da, ma, aa] = a.split('/').map(Number);
+            const [db, mb, ab] = b.split('/').map(Number);
+            return new Date(ab, mb - 1, db).getTime() - new Date(aa, ma - 1, da).getTime();
+          });
+
+          return (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {days.map(day => (
+                <div key={day} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                  <div 
+                    style={{ padding: '1.2rem 1.5rem', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
+                    onClick={() => setExpandedDay(expandedDay === day ? null : day)}
+                  >
+                    <Folder size={24} color="var(--primary-color)" />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{day}</div>
+                      <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>{grouped[day].length} mesas finalizadas</div>
+                    </div>
+                    <ChevronRight size={20} style={{ transform: expandedDay === day ? 'rotate(90deg)' : 'none', transition: 'all 0.2s' }} />
+                  </div>
+                  {expandedDay === day && (
+                    <div style={{ padding: '1rem', borderTop: '1px solid var(--border-color)' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                        {grouped[day].map((venda: any) => (
+                          <div key={venda.id} className="card" style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                              <div>
+                                <div style={{ fontWeight: 800, color: 'var(--primary-color)' }}>MESA {venda.mesas?.numero || 'S/N'}</div>
+                                <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{new Date(venda.finalizado_at || venda.data_hora).toLocaleTimeString('pt-BR')}</div>
+                                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: '8px', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                  {venda.itens_pedido?.map((it: any) => `${it.quantidade}x ${it.produtos?.nome || 'Item'}`).join(', ')}
+                                </div>
+                              </div>
+                              <div style={{ textAlign: 'right' }}>
+                                <div style={{ fontWeight: 900, fontSize: '1.1rem' }}>R$ {Number(venda.total).toFixed(2)}</div>
+                                <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>{venda.forma_pagamento || 'NÃO INF.'}</div>
+                              </div>
+                            </div>
+                            <div style={{ display: 'flex', gap: '10px' }}>
+                              <button 
+                                onClick={() => setSelectedOrder(venda)}
+                                style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                Ver Detalhes
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  const date = new Date(venda.finalizado_at || venda.data_hora).toLocaleDateString('pt-BR');
+                                  const time = new Date(venda.finalizado_at || venda.data_hora).toLocaleTimeString('pt-BR');
+                                  const items = venda.itens_pedido?.map((it: any) => ({
+                                    nome: it.produtos?.nome || 'Item',
+                                    quantidade: it.quantidade,
+                                    preco: it.preco_unitario
+                                  })) || [];
+                                  import('../utils/printUtils').then(m => m.printContaMesa(venda.mesas?.numero || 'S/N', items, false, date, time));
+                                }}
+                                style={{ padding: '8px 15px', background: 'var(--primary-color)', color: '#000', border: 'none', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                              >
+                                Reimprimir
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              {days.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '5rem', opacity: 0.2 }}>
+                  <FileTextIcon size={64} style={{ margin: '0 auto 1rem', display: 'block' }} />
+                  <p>Nenhum registro de caixa encontrado.</p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+      </div>
+    );
+  };
 
   const renderCaixa = () => {
 
@@ -4383,7 +4482,7 @@ export const Dono = () => {
 
                 { label: 'Lançamentos', value: currentMonthGastos.length, color: '#f59e0b', icon: <FileText size={18} /> },
 
-                { label: 'MÉDIA DIíRIA', value: `R$ ${(dailyChartData.length > 0 ? totalGasto / dailyChartData.length : 0).toFixed(2)}`, color: '#3b82f6', icon: <Clock size={18} /> },
+                { label: 'MÉDIA DIí RIA', value: `R$ ${(dailyChartData.length > 0 ? totalGasto / dailyChartData.length : 0).toFixed(2)}`, color: '#3b82f6', icon: <Clock size={18} /> },
 
             ].map((kpi, idx) => (
 
@@ -4675,6 +4774,7 @@ export const Dono = () => {
 
       case 'avaliacoes': return renderAvaliacoes();
 
+      case 'caixa_gestao': return renderCaixaGestao();
       case 'caixa': return renderCaixa();
 
       case 'ganhos_mensais': return renderGanhosMensais();
@@ -4736,12 +4836,13 @@ export const Dono = () => {
               </div>
 
               <nav className="sidebar-nav" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-                <SidebarItem active={activeTab === 'dashboard'} icon={<LayoutDashboard size={20}/>} label="Radar" onClick={() => { setActiveTab('dashboard'); setShowMobileMenu(false); }} />
+                <SidebarItem active={activeTab === 'dashboard'} icon={<LayoutDashboard size={20}/>} label="Painel de Gestão" onClick={() => { setActiveTab('dashboard'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'produtos'} icon={<Package size={20}/>} label="Estoque" onClick={() => { setActiveTab('produtos'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'mesas'} icon={<LayoutGrid size={20}/>} label="Mesas" onClick={() => { setActiveTab('mesas'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'comandas'} icon={<FileText size={20}/>} label="Comandas" onClick={() => { setActiveTab('comandas'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'usuarios'} icon={<UsersIcon size={20}/>} label="Equipe" onClick={() => { setActiveTab('usuarios'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'avaliacoes'} icon={<Star size={20}/>} label="Avaliações" onClick={() => { setActiveTab('avaliacoes'); setShowMobileMenu(false); }} />
+                <SidebarItem active={activeTab === 'caixa_gestao'} icon={<Folder size={20}/>} label="Gestão de Caixa" onClick={() => { setActiveTab('caixa_gestao'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'caixa'} icon={<Lock size={20}/>} label="Caixa" onClick={() => { setActiveTab('caixa'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'ganhos_mensais'} icon={<HistoryIcon size={20}/>} label="Ganhos Mensais" onClick={() => { setActiveTab('ganhos_mensais'); setShowMobileMenu(false); }} />
                 <SidebarItem active={activeTab === 'gastos_mensais'} icon={<TrendingDown size={20}/>} label="Gastos Mensais" onClick={() => { setActiveTab('gastos_mensais'); setShowMobileMenu(false); }} color="var(--danger-color)" />
@@ -4761,13 +4862,13 @@ export const Dono = () => {
 
           <img src="/logo.png" alt="Logo" style={{ width: '35px', height: '35px', borderRadius: '50%', objectFit: 'contain', border: '1px solid var(--primary-color)' }} />
 
-          <h2 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Big Bifee</h2>
+          <h2 style={{ color: 'var(--primary-color)', margin: 0, fontSize: '1.2rem', fontWeight: 800 }}>Big Beef</h2>
 
         </div>
 
         <nav className="sidebar-nav">
 
-          <SidebarItem active={activeTab === 'dashboard'} icon={<LayoutDashboard size={20}/>} label="Radar" onClick={() => setActiveTab('dashboard')} />
+          <SidebarItem active={activeTab === 'dashboard'} icon={<LayoutDashboard size={20}/>} label="Painel de Gestão" onClick={() => setActiveTab('dashboard')} />
 
           <SidebarItem active={activeTab === 'produtos'} icon={<Package size={20}/>} label="Estoque" onClick={() => setActiveTab('produtos')} />
 
@@ -4779,6 +4880,7 @@ export const Dono = () => {
 
           <SidebarItem active={activeTab === 'avaliacoes'} icon={<Star size={20}/>} label="Avaliações" onClick={() => setActiveTab('avaliacoes')} />
 
+          <SidebarItem active={activeTab === 'caixa_gestao'} icon={<Folder size={20}/>} label="Gestão de Caixa" onClick={() => setActiveTab('caixa_gestao')} />
           <SidebarItem active={activeTab === 'caixa'} icon={<Lock size={20}/>} label="Caixa" onClick={() => setActiveTab('caixa')} />
 
           <SidebarItem active={activeTab === 'ganhos_mensais'} icon={<HistoryIcon size={20}/>} label="Ganhos Mensais" onClick={() => setActiveTab('ganhos_mensais')} />
@@ -5041,7 +5143,7 @@ export const Dono = () => {
 
                 <div className="mb-4">
 
-                  <label className="label-field">DESCRIí‡íƒO</label>
+                  <label className="label-field">DESCRIÇÃO</label>
 
                   <input type="text" value={novoGasto.descricao} onChange={e => setNovoGasto({...novoGasto, descricao: e.target.value})} className="input-field" required placeholder="Ex: Fornecedor de Carnes" />
 
@@ -5063,7 +5165,7 @@ export const Dono = () => {
 
                     <option value="Fornecedores">Fornecedores / Insumos</option>
 
-                    <option value="Funcionários">Funcionários / Dirias</option>
+                    <option value="Funcionários">Funcionários / Diárias</option>
 
                     <option value="Contas">Contas (ígua, Luz, Aluguel, etc)</option>
 
@@ -5103,7 +5205,7 @@ export const Dono = () => {
 
                   <div className="mb-6 animate-fade-in">
 
-                    <label className="label-field mb-3" style={{ display: 'block' }}>SELECIONE O CARTíO</label>
+                    <label className="label-field mb-3" style={{ display: 'block' }}>SELECIONE O CARTÃO</label>
 
                     <div className="card-slider no-scrollbar" style={{ padding: '10px 5px 20px', margin: '0 -10px' }}>
 
@@ -5197,13 +5299,13 @@ export const Dono = () => {
 
               <div style={{ marginBottom: '2rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '16px', border: '1px dashed rgba(255,255,255,0.1)' }}>
 
-                <h4 style={{ fontSize: '0.8rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--primary-color)' }}>CADASTRAR NOVO CARTíO</h4>
+                <h4 style={{ fontSize: '0.8rem', fontWeight: 800, marginBottom: '1rem', color: 'var(--primary-color)' }}>CADASTRAR NOVO CARTÃO</h4>
 
                 <form onSubmit={handleAddCartao}>
 
                   <div className="mb-3">
 
-                    <label className="label-field">NOME DO CARTíO (Ex: Nubank Matheus)</label>
+                    <label className="label-field">NOME DO CARTÃO (Ex: Nubank Matheus)</label>
 
                     <input type="text" value={novoCartao.nome} onChange={e => setNovoCartao({...novoCartao, nome: e.target.value})} className="input-field" required placeholder="Nome para identificação" />                  </div>
 
@@ -5331,7 +5433,7 @@ export const Dono = () => {
 
                       <div>
 
-                        <label className="label-field">ESCOLHA UMA COR PARA O CARTíO</label>
+                        <label className="label-field">ESCOLHA UMA COR PARA O CARTÃO</label>
 
                         <input type="color" value={novoCartao.cor} onChange={e => setNovoCartao({...novoCartao, cor: e.target.value})} className="input-field" style={{ height: '42px', padding: '5px' }} />
 
@@ -5351,7 +5453,7 @@ export const Dono = () => {
 
                 <h4 style={{ fontSize: '0.8rem', fontWeight: 800, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
 
-                  <CreditCardIcon size={16} /> MEUS CARTí•ES ATIVOS
+                  <CreditCardIcon size={16} /> MEUS CARTÕES ATIVOS
 
                 </h4>
 
@@ -5431,11 +5533,76 @@ export const Dono = () => {
 
       </AnimatePresence>
 
+      <AnimatePresence>
+        {selectedOrder && (
+          <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(10px)', zIndex: 100003, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }} onClick={() => setSelectedOrder(null)}>
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: 'var(--surface-color)', border: '1px solid var(--border-color)', borderRadius: '24px', width: '100%', maxWidth: '450px', overflow: 'hidden', boxShadow: '0 30px 60px -12px rgba(0,0,0,0.7)' }}>
+              
+              <div style={{ padding: '1.5rem', background: 'var(--primary-color)', color: '#000', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h2 style={{ fontSize: '1.3rem', fontWeight: 900, margin: 0 }}>MESA {selectedOrder.mesas?.numero || 'S/N'}</h2>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', opacity: 0.8 }}>Histórico de Finalização</div>
+                </div>
+                <button onClick={() => setSelectedOrder(null)} style={{ background: 'rgba(0,0,0,0.1)', border: 'none', borderRadius: '50%', width: '32px', height: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div style={{ padding: '1.5rem', maxHeight: '60vh', overflowY: 'auto' }}>
+                <div style={{ marginBottom: '1.5rem', padding: '1rem', background: 'rgba(255,255,255,0.03)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ opacity: 0.5, fontSize: '0.75rem' }}>Data/Hora:</span>
+                    <span style={{ fontWeight: 700, fontSize: '0.75rem' }}>{new Date(selectedOrder.finalizado_at || selectedOrder.data_hora).toLocaleString('pt-BR')}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
+                    <span style={{ opacity: 0.5, fontSize: '0.75rem' }}>Atendido por:</span>
+                    <span style={{ fontWeight: 700, fontSize: '0.75rem' }}>{selectedOrder.garcom || selectedOrder.profiles?.full_name || 'Atendimento Digital'}</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ opacity: 0.5, fontSize: '0.75rem' }}>Pagamento:</span>
+                    <span style={{ fontWeight: 700, fontSize: '0.75rem', color: 'var(--primary-color)' }}>{selectedOrder.forma_pagamento || 'NÃO INF.'}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                  {(selectedOrder.itens_pedido || []).map((it: any, idx: number) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '0.6rem', borderBottom: '1px solid rgba(255,255,255,0.03)' }}>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '0.9rem' }}>{it.quantidade}x {it.produtos?.nome || 'Item'}</div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.4 }}>Unitário: R$ {Number(it.preco_unitario).toFixed(2)}</div>
+                      </div>
+                      <div style={{ fontWeight: 800 }}>R$ {(Number(it.preco_unitario) * it.quantidade).toFixed(2)}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '2rem', paddingTop: '1rem', borderTop: '2px dashed rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontWeight: 900, fontSize: '1rem' }}>TOTAL</span>
+                  <span style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>R$ {Number(selectedOrder.total).toFixed(2)}</span>
+                </div>
+              </div>
+
+              <div style={{ padding: '1rem 1.5rem 1.5rem' }}>
+                <button 
+                  onClick={() => setSelectedOrder(null)}
+                  style={{ width: '100%', padding: '12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: '#fff', borderRadius: '12px', fontWeight: 700, cursor: 'pointer' }}
+                >
+                  FECHAR
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
 
   );
 
 };
+
 
 
 

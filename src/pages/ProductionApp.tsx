@@ -66,8 +66,7 @@ export const Producao = () => {
       // Vai direto para pronto (Aceite automático)
       const nextStatus = 'pronto';
       const updates: any = { 
-        status: nextStatus,
-        preparo_fim_at: new Date().toISOString()
+        status: nextStatus
       };
       
       const { error } = await supabase.from('itens_pedido').update(updates).eq('id', itemId);
@@ -299,4 +298,5 @@ export const Producao = () => {
     </div>
   );
 };
+
 

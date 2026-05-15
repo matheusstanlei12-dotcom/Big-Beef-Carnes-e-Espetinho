@@ -18,7 +18,8 @@ interface CartState {
   addItem: (product: Product) => void;
   removeItem: (productId: string) => void;
   clearCart: () => void;
-  checkout: (mesaId: string, garcomId?: string) => Promise<boolean>;
+  checkout: (mesaId: string, garcomId?: string, clienteNome?: string) => Promise<boolean>;
+  launchToExistingOrder: (pedidoId: string) => Promise<boolean>;
 }
 
 export const useCartStore = create<CartState>((set, get) => ({
@@ -48,7 +49,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     return { items: state.items.filter(i => i.id !== productId) };
   }),
   clearCart: () => set({ items: [] }),
-  checkout: async (mesaId: string, garcomId?: string) => {
+  checkout: async (mesaId: string, garcomId?: string, clienteNome?: string) => {
     const state = get();
     if (state.items.length === 0) return false;
 
@@ -74,7 +75,7 @@ export const useCartStore = create<CartState>((set, get) => ({
     const { data: pedido, error: errPedido } = await supabase.from('pedidos').insert({
       mesa_id: uuidRealDaMesa,
       garcom_id: garcomId || null,
-      cliente_nome: 'Cliente Web',
+      cliente_nome: clienteNome || 'Cliente Web',
       status: 'novo',
       total: totalCalculado
     }).select().single();
@@ -97,6 +98,40 @@ export const useCartStore = create<CartState>((set, get) => ({
 
     // Sucesso (já limpou antes)
     return true;
+  },
+  launchToExistingOrder: async (pedidoId: string) => {
+    const state = get();
+    if (state.items.length === 0) return false;
+
+    const itemsToSubmit = [...state.items];
+    set({ items: [] });
+
+    const extraTotal = itemsToSubmit.reduce((a, b) => a + (b.preco * b.quantidade), 0);
+
+    // 1. Criar Itens do Pedido
+    const itensInsert = itemsToSubmit.map(i => ({
+      pedido_id: pedidoId,
+      produto_id: i.id,
+      quantidade: i.quantidade,
+      preco_unitario: i.preco
+    }));
+
+    const { error: errItens } = await supabase.from('itens_pedido').insert(itensInsert);
+    if (errItens) {
+      console.error(errItens);
+      set({ items: itemsToSubmit });
+      return false;
+    }
+
+    // 2. Atualizar Total do Pedido
+    const { data: currentPedido } = await supabase.from('pedidos').select('total').eq('id', pedidoId).single();
+    if (currentPedido) {
+      const novoTotal = Number(currentPedido.total) + extraTotal;
+      await supabase.from('pedidos').update({ total: novoTotal }).eq('id', pedidoId);
+    }
+
+    return true;
   }
 }));
+
 

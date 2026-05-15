@@ -15,9 +15,8 @@ import {
   TrendingUp, AlertTriangle, CheckCircle, Clock,
 
   BarChart2, Settings, ChevronDown, ChevronUp, Search,
-
-  QrCode, Link as LinkIcon, X, ShoppingBag, Utensils, Lock
-
+  QrCode, Link as LinkIcon, X, ShoppingBag, Utensils, Lock,
+  Folder, ChevronRight, FileText as FileTextIcon
 } from 'lucide-react';
 
 import { OwnerViewBanner } from '../components/OwnerViewBanner';
@@ -40,7 +39,7 @@ const formatCurrency = (val: number | string) => {
 
 };
 
-type AdminTab = 'dashboard' | 'estoque' | 'mesas' | 'equipe' | 'avaliacoes' | 'entregues' | 'fechamento';
+type AdminTab = 'dashboard' | 'estoque' | 'mesas' | 'equipe' | 'avaliacoes' | 'caixa_gestao' | 'fechamento';
 
 const ROLE_LABELS: Record<string, string> = {
 
@@ -139,6 +138,8 @@ export const Administracao = () => {
   const [showAddProduct, setShowAddProduct] = useState(false);
 
   const [expandedProduto, setExpandedProduto] = useState<string | null>(null);
+  const [expandedDay, setExpandedDay] = useState<string | null>(null);
+  const [caixaSearch, setCaixaSearch] = useState('');
 
   const [itemParaExcluir, setItemParaExcluir] = useState<any>(null); // Ponto de auditoria
 
@@ -210,7 +211,7 @@ export const Administracao = () => {
 
     // Histórico (Filtrar por turno ativo se houver, caso contrário últimas 24 horas/dia útil)
     let qHist = supabase.from('pedidos')
-      .select('*, profiles:garcom_id(full_name), mesas(numero)')
+      .select('*, profiles:garcom_id(full_name), mesas(numero), itens_pedido(quantidade, preco_unitario, produtos(nome))')
       .eq('status', 'finalizado');
 
     if (activeTurno) {
@@ -237,7 +238,7 @@ export const Administracao = () => {
 
     fetchData(); 
 
-    const interval = setInterval(fetchData, 30000);
+    const interval = setInterval(fetchData, 5000);
 
     return () => clearInterval(interval);
 
@@ -487,7 +488,7 @@ export const Administracao = () => {
 
     try {
 
-      await supabase.from('mesas').update({ status: 'livre', precisa_garcom: false }).eq('id', mesaId);
+      await supabase.from('mesas').update({ status: 'livre' }).eq('id', mesaId);
 
       setSelectedMesaComanda(null);
 
@@ -646,9 +647,8 @@ export const Administracao = () => {
 
     } catch (err: any) {
 
-      console.error("ERRO CRÍTICO NA EXCLUSíO:", err);
-
-      alert("⚠️ FALHA NA EXCLUSíO:\n\n" + (err.message || 'Erro desconhecido no banco de dados. Verifique se a tabela de auditoria existe.'));
+      console.error("ERRO CRÍTICO NA EXCLUSÃO:", err);
+      alert("⚠️ FALHA NA EXCLUSÃO:\n\n" + (err.message || 'Erro desconhecido no banco de dados. Verifique se a tabela de auditoria existe.'));
 
     } finally {
 
@@ -692,13 +692,10 @@ export const Administracao = () => {
 
       if (!p.forma_pagamento) return;
 
-      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)\s*\(R\$([0-9.,]+)\)/gi);
-
+      const matches = p.forma_pagamento.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)\s*\(R\$([0-9.,]+)\)/gi);
       if (matches) {
-
         matches.forEach((m: string) => {
-
-          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO|CARTíO)/i);
+          const typeMatch = m.match(/(PIX|DINHEIRO|DÉBITO|DEBITO|CRÉDITO|CREDITO|CARTAO|CARTÃO)/i);
 
           const valMatch = m.match(/R\$([0-9.,]+)/);
 
@@ -788,11 +785,11 @@ export const Administracao = () => {
 
             <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'contain', border: '1px solid #dc2626' }} />
 
-            <div className="mobile-hide" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#dc2626', letterSpacing: '1px' }}>Big Bifee</div>
+            <div className="mobile-hide" style={{ fontSize: '1.1rem', fontWeight: 900, color: '#dc2626', letterSpacing: '1px' }}>Big Beef</div>
 
           </div>
 
-          <div className="mobile-hide" style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', letterSpacing: '2px', marginTop: '2px' }}>ADMINISTRAÇíO</div>
+          <div className="mobile-hide" style={{ fontSize: '0.6rem', color: 'rgba(255,255,255,0.3)', letterSpacing: '2px', marginTop: '2px' }}>ADMINISTRAÇÃO</div>
 
           <div className="mobile-hide" style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginTop: '8px' }}>
 
@@ -814,7 +811,7 @@ export const Administracao = () => {
 
           <SideItem id="avaliacoes" icon={<Star size={18}/>} label="Avaliações" />
 
-          <SideItem id="entregues" icon={<CheckCircle size={18}/>} label="Pedidos Entregues" />
+          <SideItem id="caixa_gestao" icon={<Lock size={18}/>} label="Gestão de Caixa" />
 
           <SideItem id="fechamento" icon={<Lock size={18}/>} label="Fluxo de Caixa" />
 
@@ -1032,7 +1029,12 @@ export const Administracao = () => {
 
                         <select name="categoria" className="input-field">
 
-                          <option>PETISCO</option><option>BEBIDAS</option><option>COQUETÉIS</option><option>DESTILADOS (DOSE)</option><option>OUTROS</option>
+                          <option value="PETISCO">PETISCO</option>
+                          <option value="PORÇÕES">PORÇÕES</option>
+                          <option value="BEBIDAS">BEBIDAS</option>
+                          <option value="COQUETÉIS">COQUETÉIS</option>
+                          <option value="DESTILADOS (DOSE)">DESTILADOS (DOSE)</option>
+                          <option value="OUTROS">OUTROS</option>
 
                         </select>
 
@@ -1258,6 +1260,8 @@ export const Administracao = () => {
 
                           <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>Mesa {m.numero}</div>
 
+                          <h3 style={{ fontSize: '0.9rem', fontWeight: 900 }}>Big Beef</h3>
+
                           <div style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', color: statusColor }}>
 
                             {m.status}
@@ -1400,7 +1404,7 @@ export const Administracao = () => {
 
                         </div>
 
-                        <div style={{ fontSize: '0.65rem', opacity: 0.35, marginTop: '6px' }}>{pct.toFixed(0)}% de 5 estárelas</div>
+                        <div style={{ fontSize: '0.65rem', opacity: 0.35, marginTop: '6px' }}>{pct.toFixed(0)}% de 5 estrelas</div>
 
                       </div>
 
@@ -1422,7 +1426,7 @@ export const Administracao = () => {
 
                   >
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: av.sugestáoes ? '1rem' : 0 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: av.sugestoes ? '1rem' : 0 }}>
 
                       <div>
 
@@ -1444,11 +1448,11 @@ export const Administracao = () => {
 
                     </div>
 
-                    {av.sugestáoes && (
+                    {av.sugestoes && (
 
                       <p style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem', borderRadius: '8px', fontStyle: 'italic', color: 'rgba(255,255,255,0.7)', margin: 0, fontSize: '0.9rem', lineHeight: 1.6 }}>
 
-                        "{av.sugestáoes}"
+                        "{av.sugestoes}"
 
                       </p>
 
@@ -1476,7 +1480,121 @@ export const Administracao = () => {
 
           )}
 
-          {/* === FECHAMENTO === */}
+          {activeTab === 'caixa_gestao' && (
+            <motion.div key="caixa_gestao" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+              <div className="d-flex justify-between items-center mb-6">
+                <div>
+                  <h1 style={{ fontSize: '1.8rem', fontWeight: 900, marginBottom: '0.3rem' }}>Gestão de Caixa</h1>
+                  <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem' }}>Histórico estruturado por dia</p>
+                </div>
+                <div style={{ position: 'relative', width: '300px' }}>
+                  <Search size={18} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.4 }} />
+                  <input 
+                    type="text" 
+                    placeholder="Pesquisar mesa ou item..." 
+                    value={caixaSearch}
+                    onChange={e => setCaixaSearch(e.target.value)}
+                    style={{ width: '100%', padding: '10px 15px 10px 40px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', color: '#fff', fontSize: '0.85rem' }}
+                  />
+                </div>
+              </div>
+
+              {(() => {
+                const searchLower = caixaSearch.toLowerCase();
+                const filteredVendas = historicoVendas.filter(v => {
+                  if (!caixaSearch) return true;
+                  const mesaNum = v.mesas?.numero?.toString() || '';
+                  const hasItem = v.itens_pedido?.some((it: any) => it.produtos?.nome?.toLowerCase().includes(searchLower));
+                  return mesaNum.includes(caixaSearch) || hasItem;
+                });
+
+                const grouped = filteredVendas.reduce((acc: any, item) => {
+                  const date = new Date(item.finalizado_at || item.data_hora).toLocaleDateString('pt-BR');
+                  if (!acc[date]) acc[date] = [];
+                  acc[date].push(item);
+                  return acc;
+                }, {});
+
+                const days = Object.keys(grouped).sort((a, b) => {
+                  const [da, ma, aa] = a.split('/').map(Number);
+                  const [db, mb, ab] = b.split('/').map(Number);
+                  return new Date(ab, mb - 1, db).getTime() - new Date(aa, ma - 1, da).getTime();
+                });
+
+                return (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                    {days.map(day => (
+                      <div key={day} className="card" style={{ padding: 0, overflow: 'hidden' }}>
+                        <div 
+                          style={{ padding: '1.2rem 1.5rem', background: 'rgba(255,255,255,0.03)', display: 'flex', alignItems: 'center', gap: '15px', cursor: 'pointer' }}
+                          onClick={() => setExpandedDay(expandedDay === day ? null : day)}
+                        >
+                          <Folder size={24} color="#dc2626" />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{day}</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.5 }}>{grouped[day].length} mesas finalizadas</div>
+                          </div>
+                          <ChevronRight size={20} style={{ transform: expandedDay === day ? 'rotate(90deg)' : 'none', transition: 'all 0.2s' }} />
+                        </div>
+                        {expandedDay === day && (
+                          <div style={{ padding: '1rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1rem' }}>
+                              {grouped[day].map((venda: any) => (
+                                <div key={venda.id} className="card" style={{ background: 'rgba(0,0,0,0.2)', padding: '1rem' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
+                                    <div>
+                                      <div style={{ fontWeight: 800, color: '#dc2626' }}>MESA {venda.mesas?.numero || 'S/N'}</div>
+                                      <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>{new Date(venda.finalizado_at || venda.data_hora).toLocaleTimeString('pt-BR')}</div>
+                                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', marginTop: '8px', fontStyle: 'italic', display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                        {venda.itens_pedido?.map((it: any) => `${it.quantidade}x ${it.produtos?.nome || 'Item'}`).join(', ')}
+                                      </div>
+                                    </div>
+                                    <div style={{ textAlign: 'right' }}>
+                                      <div style={{ fontWeight: 900, fontSize: '1.1rem' }}>R$ {Number(venda.total).toFixed(2)}</div>
+                                      <div style={{ fontSize: '0.65rem', opacity: 0.6 }}>{venda.forma_pagamento || 'NÃO INF.'}</div>
+                                    </div>
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '10px' }}>
+                                    <button 
+                                      onClick={() => setSelectedMesaComanda({ ...venda.mesas, id_venda: venda.id, items: venda.itens_pedido, venda })}
+                                      style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#fff', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                      Ver Detalhes
+                                    </button>
+                                    <button 
+                                      onClick={() => {
+                                        const date = new Date(venda.finalizado_at || venda.data_hora).toLocaleDateString('pt-BR');
+                                        const time = new Date(venda.finalizado_at || venda.data_hora).toLocaleTimeString('pt-BR');
+                                        const items = venda.itens_pedido?.map((it: any) => ({
+                                          nome: it.produtos?.nome || 'Item',
+                                          quantidade: it.quantidade,
+                                          preco: it.preco_unitario
+                                        })) || [];
+                                        import('../utils/printUtils').then(m => m.printContaMesa(venda.mesas?.numero || 'S/N', items, false, date, time));
+                                      }}
+                                      style={{ padding: '8px 15px', background: '#dc2626', color: '#000', border: 'none', borderRadius: '8px', fontSize: '0.75rem', fontWeight: 700, cursor: 'pointer' }}
+                                    >
+                                      Reimprimir
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    {days.length === 0 && (
+                      <div style={{ textAlign: 'center', padding: '5rem', opacity: 0.2 }}>
+                        <FileTextIcon size={64} style={{ margin: '0 auto 1rem', display: 'block' }} />
+                        <p>Nenhum registro de caixa encontrado.</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </motion.div>
+          )}
 
           {activeTab === 'fechamento' && (
 
@@ -1610,7 +1728,7 @@ export const Administracao = () => {
 
                    <button onClick={() => setSelectedMesaComanda(null)} style={{ border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', padding: '0.8rem 2.5rem', borderRadius: '10px', fontWeight: 700, cursor: 'pointer', width: '100%' }}>
 
-                     FECHAR VISUALIZAÇíO
+                     FECHAR VISUALIZAÇÃO
 
                    </button>
 
@@ -1645,8 +1763,9 @@ export const Administracao = () => {
                 <div>
 
                   <h2 style={{ fontSize: '1.3rem', fontWeight: 900, margin: 0 }}>MESA {selectedMesaComanda.numero}</h2>
-
-                  <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', opacity: 0.8, letterSpacing: '1px' }}>Consumo em Tempo Real</div>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', opacity: 0.8, letterSpacing: '1px' }}>
+                    {selectedMesaComanda.venda?.garcom || selectedMesaComanda.venda?.profiles?.full_name ? `Atendido por: ${selectedMesaComanda.venda?.garcom || selectedMesaComanda.venda?.profiles?.full_name}` : 'Atendimento Digital'}
+                  </div>
 
                 </div>
 
@@ -1831,5 +1950,6 @@ export const Administracao = () => {
   );
 
 };
+
 
 

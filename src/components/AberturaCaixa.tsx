@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, Calculator, ArrowRight, DollarSign, Clock } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -203,4 +203,5 @@ export const AberturaCaixa = ({ onOpen }: AberturaCaixaProps) => {
     </div>
   );
 };
+
 

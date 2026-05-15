@@ -1,4 +1,4 @@
-export const formatCurrency = (val: number | string) => {
+﻿export const formatCurrency = (val: number | string) => {
   const num = typeof val === 'string' ? parseFloat(val) : val;
   if (isNaN(num)) return '0,00';
   return new Intl.NumberFormat('pt-BR', {
@@ -6,4 +6,5 @@ export const formatCurrency = (val: number | string) => {
     maximumFractionDigits: 2,
   }).format(num);
 };
+
 

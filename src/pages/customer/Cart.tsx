@@ -1,4 +1,4 @@
-import { useCartStore } from '../../store/cartStore';
+﻿import { useCartStore } from '../../store/cartStore';
 
 import { useParams, useNavigate } from 'react-router-dom';
 
@@ -147,3 +147,4 @@ export const Cart = () => {
   );
 
 };
+

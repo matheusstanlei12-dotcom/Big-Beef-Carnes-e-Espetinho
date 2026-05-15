@@ -199,15 +199,11 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
       setMesasPendentes(mesas || []);
 
       const { data: pedidos } = await supabase.from('pedidos')
-
         .select(`
-
           *, 
-
-          profiles:garcom_id(full_name)
-
+          profiles:garcom_id(full_name),
+          mesas(numero)
         `)
-
         .neq('status', 'finalizado');
 
       setPedidosAtivos(pedidos || []);
@@ -338,7 +334,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
       }
 
-      // 2. Histórico (Filtrar por turno_id se estáiver aberto, caso contrário últimas 24 horas)
+      // 2. Histórico (Filtrar por turno_id se estiver aberto, caso contrário últimas 24 horas)
 
       const currentTurnoId = localStorage.getItem('turno_id');
 
@@ -448,70 +444,32 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   // --- Lógica de Checkout ---
 
-  const openTableCheckout = async (mesa: any) => {
-
-    setSelectedMesa(mesa);
-
+  const openTableCheckoutForPedido = async (pedido: any) => {
+    setSelectedMesa(pedido.mesas || { id: pedido.mesa_id });
     setPagamentos([]);
-
     setValorRecebido('');
-
     setCustomAmount('');
-
     setDividirPor(1);
-
     setSplitPayments([]);
-
     setIncluirTaxa(false);
-
     setSelectedMethod(null);
 
-    // Buscar pedidos da mesa
-
-    const { data: pedidosMesa } = await supabase.from('pedidos')
-
-      .select('id')
-
-      .eq('mesa_id', mesa.id)
-
-      .neq('status', 'finalizado');
-
-    if (!pedidosMesa || pedidosMesa.length === 0) {
-
-      setCheckoutItens([]);
-
-      setIsCheckoutOpen(true);
-
-      return;
-
-    }
-
+    // Buscar itens apenas desse pedido específico
     const { data: itens } = await supabase.from('itens_pedido')
-
       .select('*, produtos(nome, categoria)')
-
-      .in('pedido_id', pedidosMesa.map(p => p.id));
+      .eq('pedido_id', pedido.id);
 
     setCheckoutItens(itens?.map(i => ({
-
        id: i.id,
-
        nome: i.produtos?.nome,
-
        quantidade: i.quantidade,
-
        preco: Number(i.preco_unitario),
-
        categoria: i.produtos?.categoria,
-
        status: i.status,
-
        pedido_id: i.pedido_id
-
     })) || []);
 
     setIsCheckoutOpen(true);
-
   };
 
   const handleDeleteCheckoutItem = async (item: any) => {
@@ -657,90 +615,58 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
       const formaPagamentoStr = pagamentos.map(p => `${p.method.toUpperCase()} (R$${formatCurrency(p.amount)})`).join(', ');
 
       if (selectedMesa) {
+        // Obter o ID do pedido que está sendo fechado agora
+        const currentPedidoId = checkoutItens[0]?.pedido_id;
 
-        // Buscar IDs dos pedidos que serão fechados
-
-        console.log("Finalizando mesa:", selectedMesa.id);
-
-        const { data: pedidosAtivosDb } = await supabase.from('pedidos')
-
-          .select('id')
-
-          .eq('mesa_id', selectedMesa.id)
-
-          .neq('status', 'finalizado');
-
-        if (!pedidosAtivosDb || pedidosAtivosDb.length === 0) {
-
-          console.warn("Mesa tentou ser fechada mas pedidos sumiram no DB:", selectedMesa.id);
-
-          throw new Error("Nenhum pedido ativo encontrado no banco para esta mesa.");
-
+        if (!currentPedidoId) {
+          console.warn("Mesa sem pedido ativo detectada no fechamento.");
+          setIsCheckoutOpen(false);
+          return;
         }
 
-        const ids = pedidosAtivosDb.map(p => p.id);
-
-        const masterId = ids[0];
-
-        const otherIds = ids.slice(1);
-
-        // 1. Atualizar o pedido mestáre com o valor total e pagamento
-
         const turnoId = localStorage.getItem('turno_id');
-
         const updateData: any = { 
-
           status: 'finalizado', 
-
           forma_pagamento: formaPagamentoStr,
-
           total: totalComTaxa,
-
           finalizado_at: new Date().toISOString()
-
         };
-
         if (turnoId) updateData.turno_id = turnoId;
 
+        // 1. Finalizar apenas este pedido
         const { error: masterError } = await supabase.from('pedidos')
-
           .update(updateData)
-
-          .eq('id', masterId);
+          .eq('id', currentPedidoId);
 
         if (masterError) throw masterError;
 
-        // 2. Se houver outros pedidos na mesa, fechá-los com total zero para não duplicar no financeiro
+        // 2. Verificar se ainda existem outros pedidos ativos para esta mesa
+        const { data: outrosPedidos } = await supabase.from('pedidos')
+          .select('id')
+          .eq('mesa_id', selectedMesa.id)
+          .neq('status', 'finalizado');
 
-        if (otherIds.length > 0) {
-
-          const bulkUpdateData: any = { 
-
-            status: 'finalizado', 
-
-            forma_pagamento: 'AGRUPADO',
-
-            total: 0,
-
-            finalizado_at: new Date().toISOString()
-
-          };
-
-          if (turnoId) bulkUpdateData.turno_id = turnoId;
-
-          await supabase.from('pedidos')
-
-            .update(bulkUpdateData)
-
-            .in('id', otherIds);
-
+        if (!outrosPedidos || outrosPedidos.length === 0) {
+          // 3. Se não houver mais nada, liberar a mesa
+          await supabase.from('mesas').update({ status: 'livre' }).eq('id', selectedMesa.id);
+          alert("Comanda finalizada e mesa liberada!");
+        } else {
+          // 4. Se ainda houver consumo, a mesa volta para 'ocupada' (ou mantém aguardando se for o caso)
+          await supabase.from('mesas').update({ status: 'ocupada' }).eq('id', selectedMesa.id);
+          alert("Comanda finalizada! Mesa continua ocupada por outros clientes.");
         }
 
-        // 3. Liberar a mesa
-
-        await supabase.from('mesas').update({ status: 'livre', precisa_garcom: false }).eq('id', selectedMesa.id);
-
       } else {
+
+        if (totalCheckout === 0) {
+
+          console.warn("Venda rápida de R$ 0,00 ignorada.");
+
+          setIsCheckoutOpen(false);
+
+          return;
+
+        }
 
         const turnoId = localStorage.getItem('turno_id');
 
@@ -809,11 +735,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
       const nextStatus = 'pronto';
 
       const updates: any = { 
-
-        status: nextStatus,
-
-        preparo_fim_at: new Date().toISOString()
-
+        status: nextStatus
       };
 
       const { error } = await supabase.from('itens_pedido').update(updates).eq('id', itemId);
@@ -936,69 +858,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   // handleFechamentoCaixa movido para o componente FechamentoCaixa
 
-  const handleSimularMesasCaixa = async () => {
 
-    if (!confirm("GERAR MESAS DE TESTE?")) return;
-
-    const { data: mesasLivres } = await supabase.from('mesas').select('*').eq('status', 'livre').limit(3);
-
-    const { data: prods } = await supabase.from('produtos').select('*').limit(5);
-
-    if (!mesasLivres || !prods) return;
-
-    for (const mesa of mesasLivres) {
-
-       await supabase.from('mesas').update({ status: 'aguardando conta', precisa_garcom: true }).eq('id', mesa.id);
-
-       const { data: p } = await supabase.from('pedidos').insert({ mesa_id: mesa.id, garcom_id: profile?.id, status: 'aberto', total: 50, data_hora: new Date().toISOString() }).select().single();
-
-       if (p) {
-
-          await supabase.from('itens_pedido').insert({ pedido_id: p.id, produto_id: prods[0].id, quantidade: 2, preco_unitario: prods[0].preco, status: 'entregue' });
-
-       }
-
-    }
-
-    fetchData();
-
-  };
-
-  const handleSimularCozinha = async () => {
-
-    const { data: prods } = await supabase.from('produtos').select('*').limit(3);
-
-    if (!prods) return;
-
-    const { data: p } = await supabase.from('pedidos').insert({ mesa_id: null, garcom_id: profile?.id, status: 'novo', total: 0, data_hora: new Date().toISOString() }).select().single();
-
-    if (p) {
-
-       await supabase.from('itens_pedido').insert({ pedido_id: p.id, produto_id: prods[0].id, quantidade: 1, preco_unitario: prods[0].preco, status: 'pendente' });
-
-    }
-
-    fetchData();
-
-  };
-
-  const handleSimularHistorico = async () => {
-
-    const pagamentosFixos = ['DINHEIRO', 'PIX', 'DÉBITO', 'CRÉDITO'];
-
-    for (const pagType of pagamentosFixos) {
-
-       const totalRand = 50;
-
-       const pagStr = `${pagType} (R$${formatCurrency(totalRand)})`;
-
-       await supabase.from('pedidos').insert({ mesa_id: null, garcom_id: profile?.id, status: 'finalizado', total: totalRand, forma_pagamento: pagStr, data_hora: new Date().toISOString(), finalizado_at: new Date().toISOString() });
-
-    }
-
-    fetchData();
-
-  };
 
   const categories = ['TODOS', 'PETISCO', 'BEBIDAS', 'COQUETÉIS', 'DESTILADOS (DOSE)', 'OUTROS'];
 
@@ -1028,7 +888,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
               <button onClick={() => setActiveTab('balcao')} style={{ background: 'none', border: 'none', color: activeTab === 'balcao' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
 
-                <ShoppingCart size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>BALCíO</span>
+                <ShoppingCart size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>BALCÃO</span>
 
               </button>
 
@@ -1070,7 +930,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
            <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>
 
-             {!isCaixaAberto ? 'STATUS DO SISTEMA' : (activeTab === 'mesas' ? 'GESTíO DE MESAS' : activeTab === 'balcao' ? 'VENDA DE BALCíO' : activeTab === 'cozinha' ? 'PEDIDOS COZINHA' : 'FECHAMENTO E LEITURA Z')}
+              {!isCaixaAberto ? 'STATUS DO SISTEMA' : (activeTab === 'mesas' ? 'GESTÃO DE MESAS' : activeTab === 'balcao' ? 'VENDA DE BALCÃO' : activeTab === 'cozinha' ? 'PEDIDOS COZINHA' : 'FECHAMENTO E LEITURA Z')}
 
            </h1>
 
@@ -1104,15 +964,41 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                 <motion.div key="mesas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
 
-                   {mesasPendentes.map(mesa => (
+                   {pedidosAtivos.filter(p => p.mesa_id).map(pedido => (
 
-                     <div key={mesa.id} className="card hover-surface" style={{ borderLeft: '8px solid var(--primary-color)', padding: '1.5rem', textAlign: 'center' }}>
+                     <div key={pedido.id} className="card hover-surface" style={{ 
 
-                        <div style={{ fontSize: '0.6rem', opacity: 0.5, marginBottom: '0.5rem' }}>AGUARDANDO CONTA</div>
+                       borderLeft: `8px solid ${pedido.mesas?.status === 'aguardando conta' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'}`, 
 
-                        <div style={{ fontSize: '2rem', fontWeight: 900, marginBottom: '0.5rem' }}>Mesa {mesa.numero}</div>
+                       padding: '1.2rem', 
 
-                        <button className="btn-primary w-full mt-4" onClick={() => openTableCheckout(mesa)} style={{ background: 'var(--primary-color)', color: '#000' }}>FECHAR CONTA</button>
+                       textAlign: 'center',
+
+                       position: 'relative'
+
+                     }}>
+
+                        <div style={{ fontSize: '0.6rem', opacity: 0.5, marginBottom: '0.3rem', textTransform: 'uppercase' }}>
+
+                          {pedido.mesas?.status === 'aguardando conta' ? 'Aguardando Conta' : 'Em Consumo'}
+
+                        </div>
+
+                        <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>Mesa {pedido.mesas?.numero || '?'}</div>
+
+                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-color)', marginTop: '2px', marginBottom: '0.8rem' }}>
+
+                          {pedido.cliente_nome || 'Sem nome'}
+
+                        </div>
+
+                        
+
+                        <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>R$ {Number(pedido.total).toFixed(2)}</div>
+
+                        
+
+                        <button className="btn-primary w-full" onClick={() => openTableCheckoutForPedido(pedido)} style={{ background: 'var(--primary-color)', color: '#000', padding: '0.6rem', fontSize: '0.8rem' }}>FECHAR COMANDA</button>
 
                      </div>
 
@@ -1126,8 +1012,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                        <h3 style={{ opacity: 0.3 }}>Nenhuma mesa ativa no momento.</h3>
 
-                       <button onClick={handleSimularMesasCaixa} className="btn-outline mt-6">Simular Mesas</button>
-
+ 
                      </div>
 
                    )}
@@ -1226,7 +1111,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                       <div style={{ background: '#eee', padding: '1rem', textAlign: 'center', borderBottom: '2px dashed #ccc' }}>
 
-                         <h3 style={{ fontSize: '0.9rem', fontWeight: 900 }}>Big Bifee</h3>
+                         <h3 style={{ fontSize: '0.9rem', fontWeight: 900 }}>Big Beef</h3>
 
                       </div>
 
@@ -1989,3 +1874,4 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
   );
 
 };
+

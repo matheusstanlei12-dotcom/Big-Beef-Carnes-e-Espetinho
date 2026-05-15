@@ -528,17 +528,21 @@ export const Garcom = () => {
 
           </button>
 
-          <button 
+          {profile?.role !== 'garcom' && (
 
-            onClick={() => navigate('/caixa')}
+            <button 
 
-            style={{ padding: '8px 20px', borderRadius: '10px', background: activeView === 'caixa' ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)', color: activeView === 'caixa' ? '#000' : '#fff', border: 'none', fontWeight: 800, cursor: 'pointer' }}
+              onClick={() => navigate('/caixa')}
 
-          >
+              style={{ padding: '8px 20px', borderRadius: '10px', background: activeView === 'caixa' ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)', color: activeView === 'caixa' ? '#000' : '#fff', border: 'none', fontWeight: 800, cursor: 'pointer' }}
 
-            📊 Caixa
+            >
 
-          </button>
+              📊 Caixa
+
+            </button>
+
+          )}
 
         </div>
 
@@ -638,156 +642,139 @@ export const Garcom = () => {
 
                   </div>
 
-                  {showAddMenu ? (
-
-                    <div className="card">
-
-                      {items.length > 0 && (
-
-                        <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(220, 38, 38, 0.1)' }}>
-
-                          {items.map(it => (
-
-                            <div key={it.id} className="d-flex justify-between items-center mb-2">
-
-                              <span>{it.quantidade}x {it.nome}</span>
-
-                              <div className="d-flex gap-2">
-
-                                  <button className="btn-outline" style={{width: 'auto', padding: '4px 8px'}} onClick={() => removeItem(it.id)}>-</button>
-
-                                  <button className="btn-success" style={{width: 'auto', padding: '4px 8px'}} onClick={() => addItem(it)}>+</button>
-
-                              </div>
-
-                            </div>
-
-                          ))}
-
-                          <button className="btn-success mt-4" onClick={handleLaunchOrder} disabled={isCheckingOut}>Lançar (R$ {formatCurrency(currentCartTotal)})</button>
-
-                        </div>
-
-                      )}
-
-                      <div style={{ padding: '1rem' }}>
-
-                        <div className="mb-4">
-
-                          <input 
-
-                            type="text" 
-
-                            placeholder="🔍 Pesquisar item..." 
-
-                            value={searchTerm} 
-
-                            onChange={(e) => setSearchTerm(e.target.value)} 
-
-                            className="input-field"
-
-                            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '10px' }}
-
-                          />
-
-                        </div>
-
-                        <select value={activeCategory} onChange={(e) => { setActiveCategory(e.target.value); setSearchTerm(''); }} className="input-field mb-4" style={{ borderRadius: '10px' }}>
-
-                          <option value="TODOS">Todas Categorias</option>
-
-                          {Array.from(new Set(produtos.map(p => (p.categoria || "GERAL").toUpperCase()))).map(cat => (
-
-                            <option key={cat as string} value={cat as string}>{cat}</option>
-
-                          ))}
-
-                        </select>
-
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-
-                          {filteredProdutosAtendimento.map(p => (
-
-                             <div key={p.id} onClick={() => p.estoque > 0 && addItem(p)} className="card text-center" style={{ padding: '0.5rem', opacity: p.estoque > 0 ? 1 : 0.5, cursor: 'pointer' }}>
-
-                               <div style={{fontSize: '0.8rem', fontWeight: 600}}>{p.nome}</div>
-
-                               <div style={{ color: 'var(--primary-color)', fontSize: '0.9rem' }}>R$ {formatCurrency(p.preco)}</div>
-
-                             </div>
-
-                          ))}
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  ) : (
-
-                    <>
-
-                      <div className="card d-flex flex-col gap-1">
-
+                  {!selectedComandaId ? (
+                    /* PASSO 1: SELECIONAR OU CRIAR COMANDA */
+                    <div className="animate-fade-in">
+                      <h4 className="mb-4" style={{ fontSize: '0.9rem', opacity: 0.7 }}>SELECIONE A COMANDA:</h4>
+                      <div className="d-flex flex-col gap-3" style={{ paddingBottom: '10rem' }}>
                         {currentMesaPedidos.map(pedido => (
-
-                          <div key={pedido.id} style={{ padding: '0.75rem', borderLeft: '3px solid var(--primary-color)', background: 'rgba(255,255,255,0.02)', borderRadius: '8px', marginBottom: '8px' }}>
-
-                            {itensPedido.filter(i => i.pedido_id === pedido.id).map(item => (
-
-                              <div key={item.id} className="d-flex justify-between items-center mb-2">
-
-                                  <span>{item.quantidade}x {item.produtos?.nome}</span>
-
-                                  <button onClick={() => handleExcluirItem(item.id, item)} style={{ color: 'var(--danger-color)', background: 'none', border: 'none', cursor: 'pointer' }}><Trash2 size={16}/></button>
-
+                          <button 
+                            key={pedido.id} 
+                            className="card hover-surface d-flex justify-between items-center" 
+                            style={{ padding: '1.2rem', textAlign: 'left', borderLeft: '4px solid var(--primary-color)' }}
+                            onClick={() => {
+                              setSelectedComandaId(pedido.id);
+                              setShowAddMenu(true);
+                            }}
+                          >
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontWeight: 800 }}>{pedido.cliente_nome || 'Sem nome'}</div>
+                              <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>R$ {formatCurrency(pedido.total)}</div>
+                              
+                              {/* Preview de Itens */}
+                              <div style={{ fontSize: '0.65rem', marginTop: '5px', opacity: 0.8, color: 'var(--primary-color)' }}>
+                                {itensPedido.filter(i => i.pedido_id === pedido.id).slice(0, 3).map(i => i.produtos?.nome).join(', ')}
+                                {itensPedido.filter(i => i.pedido_id === pedido.id).length > 3 && '...'}
                               </div>
-
-                            ))}
-
-                          </div>
-
+                            </div>
+                            <span style={{ fontSize: '1.2rem' }}>&rarr;</span>
+                          </button>
                         ))}
 
-                        {currentMesaPedidos.length === 0 && <p className="text-center text-muted p-4">Nenhum item lançado.</p>}
+                        <button 
+                          className="btn-success" 
+                          style={{ padding: '1.2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                          onClick={() => {
+                            setSelectedComandaId('new');
+                            setShowAddMenu(true);
+                          }}
+                        >
+                          ✚ ABRIR NOVA COMANDA
+                        </button>
 
+                        <div className="card mt-6" style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem' }}>
+                           <button 
+                            className="btn-warning w-full" 
+                            onClick={() => handlePedirConta(selectedMesa.id)}
+                            disabled={selectedMesa.status === 'aguardando conta'}
+                            style={{ padding: '1rem', fontWeight: 800 }}
+                          >
+                            {selectedMesa.status === 'aguardando conta' ? 'FECHAMENTO SOLICITADO' : 'SOLICITAR CONTA (MESA TODA)'}
+                          </button>
+                          
+                          {selectedMesa.status === 'aguardando conta' && (
+                            <button className="btn-danger w-full mt-2" onClick={() => handleCancelarFechamento(selectedMesa.id)}>
+                               CANCELAR SOLICITAÇÃO
+                            </button>
+                          )}
+                        </div>
+
+                        <button className="btn-outline mt-4" onClick={() => handleLiberarMesa(selectedMesa.id)} style={{ opacity: 0.5 }}>
+                          Liberar Mesa Vazia
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* PASSO 2: LANÇAR ITENS NA COMANDA SELECIONADA */
+                    <div className="animate-fade-in">
+                      <div className="d-flex justify-between items-center mb-4">
+                        <button className="btn-outline" onClick={() => { setSelectedComandaId(null); setShowAddMenu(false); clearCart(); }} style={{ width: 'auto', padding: '4px 12px', fontSize: '0.8rem' }}>&larr; Voltar para Comandas</button>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontSize: '0.8rem', fontWeight: 800, color: 'var(--primary-color)' }}>
+                            {selectedComandaId === 'new' ? 'NOVA COMANDA' : `LANÇANDO: ${currentMesaPedidos.find(p => p.id === selectedComandaId)?.cliente_nome || ''}`}
+                          </div>
+                        </div>
                       </div>
 
-                      <div style={{ position: 'fixed', bottom: 0, left: 0, right: 0, padding: '1rem', background: 'var(--surface-color)', zIndex: 100, borderTop: '1px solid var(--border-color)', display: 'flex', gap: '1rem' }}>
-
-                        {currentMesaPedidos.length === 0 && selectedMesa.status === 'ocupada' ? (
-
-                          <button className="btn-danger" onClick={() => handleLiberarMesa(selectedMesa.id)} style={{ flex: 1, padding: '1rem', fontWeight: 800 }}>
-
-                            LIBERAR MESA
-
-                          </button>
-
-                        ) : (
-
-                          <button className="btn-warning" onClick={() => handlePedirConta(selectedMesa.id)} disabled={selectedMesa.status === 'aguardando conta'} style={{ flex: 2, padding: '1rem', fontWeight: 800 }}>
-
-                            {selectedMesa.status === 'aguardando conta' ? 'FECHAMENTO SOLICITADO' : 'SOLICITAR FECHAMENTO'}
-
-                          </button>
-
+                      <div className="card">
+                        {items.length > 0 && (
+                          <div style={{ padding: '1rem', borderBottom: '2px solid var(--border-color)', backgroundColor: 'rgba(220, 38, 38, 0.1)' }}>
+                            {items.map(it => (
+                              <div key={it.id} className="d-flex justify-between items-center mb-2">
+                                <span>{it.quantidade}x {it.nome}</span>
+                                <div className="d-flex gap-2">
+                                    <button className="btn-outline" style={{width: 'auto', padding: '4px 8px'}} onClick={() => removeItem(it.id)}>-</button>
+                                    <button className="btn-success" style={{width: 'auto', padding: '4px 8px'}} onClick={() => addItem(it)}>+</button>
+                                </div>
+                              </div>
+                            ))}
+                            <button className="btn-success mt-4" onClick={handleLaunchOrder} disabled={isCheckingOut}>Confirmar Lançamento (R$ {formatCurrency(currentCartTotal)})</button>
+                          </div>
                         )}
 
-                        {selectedMesa.status === 'aguardando conta' && (
+                        <div style={{ padding: '1rem' }}>
+                          {selectedComandaId === 'new' && (
+                            <div className="mb-4">
+                              <label style={{ fontSize: '0.7rem', fontWeight: 800, opacity: 0.5, display: 'block', marginBottom: '4px' }}>NOME DO CLIENTE / COMANDA</label>
+                              <input 
+                                type="text" 
+                                placeholder="Ex: João Silva, Turma da Firma..." 
+                                value={clienteNome} 
+                                onChange={e => setClienteNome(e.target.value)} 
+                                style={{ width: '100%', padding: '0.8rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#fff', marginBottom: '1rem' }} 
+                              />
+                            </div>
+                          )}
 
-                          <button className="btn-danger" onClick={() => handleCancelarFechamento(selectedMesa.id)} style={{ flex: 1, padding: '1rem', fontWeight: 800 }}>
+                          <div className="mb-4">
+                            <input 
+                              type="text" 
+                              placeholder="🔍 Pesquisar produto..." 
+                              value={searchTerm} 
+                              onChange={(e) => setSearchTerm(e.target.value)} 
+                              className="input-field"
+                              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', borderRadius: '10px' }}
+                            />
+                          </div>
 
-                             CANCELAR
+                          <select value={activeCategory} onChange={(e) => { setActiveCategory(e.target.value); setSearchTerm(''); }} className="input-field mb-4" style={{ borderRadius: '10px' }}>
+                            <option value="TODOS">Todas Categorias</option>
+                            {Array.from(new Set(produtos.map(p => (p.categoria || "GERAL").toUpperCase()))).map(cat => (
+                              <option key={cat as string} value={cat as string}>{cat}</option>
+                            ))}
+                          </select>
 
-                          </button>
-
-                        )}
-
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                            {filteredProdutosAtendimento.map(p => (
+                               <div key={p.id} onClick={() => p.estoque > 0 && addItem(p)} className="card text-center" style={{ padding: '0.5rem', opacity: p.estoque > 0 ? 1 : 0.5, cursor: 'pointer' }}>
+                                 <div style={{fontSize: '0.8rem', fontWeight: 600}}>{p.nome}</div>
+                                 <div style={{ color: 'var(--primary-color)', fontSize: '0.9rem' }}>R$ {formatCurrency(p.preco)}</div>
+                               </div>
+                            ))}
+                          </div>
+                        </div>
                       </div>
-
-                    </>
-
+                    </div>
                   )}
 
                 </>

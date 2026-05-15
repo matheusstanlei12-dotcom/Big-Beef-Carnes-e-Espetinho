@@ -55,7 +55,7 @@ export const CustomerApp = () => {
   const [notaAtendimento, setNotaAtendimento] = useState(0);
   const [notaComida, setNotaComida] = useState(0);
   const [notaAmbiente, setNotaAmbiente] = useState(0);
-  const [sugestáoes, setSugestáoes] = useState('');
+  const [sugestoes, setSugestoes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Toast state
@@ -95,7 +95,7 @@ export const CustomerApp = () => {
 
   const handleEnviarAvaliacao = async () => {
     if (notaAtendimento === 0 || notaComida === 0 || notaAmbiente === 0) {
-      showToast('⚠️ Selecione as estárelas para todas as categorias!', 'error');
+      showToast('⚠️ Selecione as estrelas para todas as categorias!', 'error');
       return;
     }
     
@@ -105,7 +105,7 @@ export const CustomerApp = () => {
       nota_atendimento: notaAtendimento,
       nota_comida: notaComida,
       nota_ambiente: notaAmbiente,
-      sugestáoes: sugestáoes
+      sugestoes: sugestoes
     });
     
     localStorage.removeItem(`mesa_ativa_${mesaNum}`);
@@ -132,10 +132,10 @@ export const CustomerApp = () => {
           <StarRating label="A vibe e o Ambiente?" rating={notaAmbiente} setRating={setNotaAmbiente} />
           
           <div style={{ marginTop: '1.5rem' }}>
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase' }}>Críticas ou Sugestáões? (Opcional)</div>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)', marginBottom: '8px', fontWeight: 600, textTransform: 'uppercase' }}>Críticas ou Sugestões? (Opcional)</div>
             <textarea 
-              value={sugestáoes}
-              onChange={e => setSugestáoes(e.target.value)}
+              value={sugestoes}
+              onChange={e => setSugestoes(e.target.value)}
               placeholder="Conta pra gente o que podemos melhorar..."
               style={{ width: '100%', height: '100px', backgroundColor: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '8px', color: '#fff', padding: '1rem', resize: 'none', outline: 'none' }}
             />
@@ -166,7 +166,7 @@ export const CustomerApp = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <img src="/logo.png" alt="Logo" style={{ width: '40px', height: '40px', borderRadius: '10px', objectFit: 'contain' }} />
           <div>
-            <h2 style={{ fontSize: '1.1rem', margin: 0, color: '#dc2626', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.1 }}>Big Bifee</h2>
+            <h2 style={{ fontSize: '1.1rem', margin: 0, color: '#dc2626', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.5px', lineHeight: 1.1 }}>Big Beef</h2>
             <div style={{ fontSize: '0.7rem', color: '#fff', fontWeight: 600, marginTop: '2px', opacity: 0.8 }}>MESA {mesaNum}</div>
           </div>
         </div>
@@ -185,7 +185,7 @@ export const CustomerApp = () => {
           borderTop: '1px solid var(--border-color)', opacity: 0.7 
         }}>
           <p style={{ color: 'var(--primary-color)', fontStyle: 'italic', fontSize: '0.8rem', lineHeight: 1.6, textAlign: 'center' }}>
-            Big Bifee
+            Big Beef
           </p>
 
         </footer>
@@ -240,4 +240,5 @@ export const CustomerApp = () => {
     </div>
   );
 };
+
 

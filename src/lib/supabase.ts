@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+﻿import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = 'https://onawbdkzygymfknkrnze.supabase.co';
 const supabaseAnonKey = 'sb_publishable_fwnqrLz-zqQsXAzxE7BoYw_2V3NnoM3';
@@ -28,5 +28,6 @@ export const tempAuthClient = createClient(supabaseUrl, supabaseAnonKey, {
 if (typeof window !== 'undefined') {
   (window as any).supabase = supabase;
 }
+
 
 
