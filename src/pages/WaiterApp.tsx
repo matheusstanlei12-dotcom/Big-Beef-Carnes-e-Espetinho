@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -65,6 +65,8 @@ export const Garcom = () => {
   const [clienteNome, setClienteNome] = useState('');
   const { items, addItem, removeItem, clearCart, checkout, launchToExistingOrder } = useCartStore();
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  // Ref persistente de comandas aguardando conta — imune a race conditions com fetchData
+  const aguardandoContaIds = useRef<Set<string>>(new Set());
 
   const fetchData = async () => {
 
@@ -72,7 +74,7 @@ export const Garcom = () => {
 
       const { data: mesasData } = await supabase.from('mesas').select('*').order('numero', { ascending: true });
 
-      const { data: pedidosData } = await supabase.from('pedidos').select('id, mesa_id, status, total').neq('status', 'finalizado');
+      const { data: pedidosData } = await supabase.from('pedidos').select('id, mesa_id, status, total, cliente_nome').neq('status', 'finalizado');
 
       const { data: prodsData } = await supabase.from('produtos').select('*').order('categoria', { ascending: true });
 
@@ -120,13 +122,15 @@ export const Garcom = () => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 5000);
+    const interval = setInterval(fetchData, 15000); // Reduzido para evitar conflito com atualizações otimistas
 
     // Realtime subscription for products (stock/price updates)
 
     const channel = supabase
 
       .channel('schema-db-changes')
+
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pedidos' }, () => { fetchData(); })
 
       .on('postgres_changes', 
 
@@ -318,7 +322,7 @@ export const Garcom = () => {
 
     }
 
-    if(!confirm(`Deseja excluir "${item.produtos?.nome}"?`)) return;
+    if(!window.confirm(`Deseja excluir "${item.produtos?.nome}"?`)) return;
 
     const { error: deleteError } = await supabase.from('itens_pedido').delete().eq('id', itemId);
 
@@ -355,101 +359,88 @@ export const Garcom = () => {
   };
 
   const handleLiberarMesa = async (mesaId: string) => {
-
-    if (!confirm("Liberar mesa vazia?")) return;
-
-    await supabase.from('mesas').update({ status: 'livre', precisa_garcom: false }).eq('id', mesaId);
-
+    // Atualização otimista: fecha a view imediatamente
     setSelectedMesa(null);
-
+    setMesas(prev => prev.map(m => m.id === mesaId ? { ...m, status: 'livre' } : m));
+    // Salva no banco em background
+    await supabase.from('pedidos').update({ status: 'finalizado' }).eq('mesa_id', mesaId).neq('status', 'finalizado');
+    await supabase.from('mesas').update({ status: 'livre' }).eq('id', mesaId);
     fetchData();
-
   };
 
   const handleAtenderChamado = async (mesaId: string) => {
 
-    await supabase.from('mesas').update({ precisa_garcom: false }).eq('id', mesaId);
+    await supabase.from('mesas').update({ status: 'ocupada' }).eq('id', mesaId);
 
     fetchData();
 
   };
 
   const handleCancelarFechamento = async (mesaId: string) => {
-
-    if(!confirm("Cancelar pedido de conta e voltar para ocupada?")) return;
-
     try {
-
-      await supabase.from('mesas').update({ status: 'ocupada', precisa_garcom: false }).eq('id', mesaId);
-
-      alert("Mesa voltou para status Ocupada!");
-
+      await supabase.from('mesas').update({ status: 'ocupada' }).eq('id', mesaId);
       fetchData();
-
       setSelectedMesa(null);
-
     } catch (err) {
-
       alert("Erro ao cancelar fechamento.");
-
     }
+  };
 
+  const handlePedirContaComanda = async (pedidoId: string, mesaId: string) => {
+    try {
+      // Registrar no Set local IMEDIATAMENTE (imune a fetchData race conditions)
+      aguardandoContaIds.current.add(pedidoId);
+      // Atualização otimista no estado
+      setPedidos(prev => prev.map(p => p.id === pedidoId ? { ...p, status: 'aguardando_conta' } : p));
+
+      // Salva no banco
+      await supabase.from('pedidos').update({ status: 'aguardando_conta' }).eq('id', pedidoId);
+
+      // Verificar se TODOS os pedidos da mesa agora são 'aguardando_conta'
+      const { data: pedidosAtivos } = await supabase
+        .from('pedidos')
+        .select('id, status')
+        .eq('mesa_id', mesaId)
+        .neq('status', 'finalizado');
+
+      const todosAguardando = pedidosAtivos?.every(p =>
+        p.id === pedidoId || p.status === 'aguardando_conta' || aguardandoContaIds.current.has(p.id)
+      );
+
+      if (todosAguardando && pedidosAtivos && pedidosAtivos.length > 0) {
+        await supabase.from('mesas').update({ status: 'aguardando conta' }).eq('id', mesaId);
+        setMesas(prev => prev.map(m => m.id === mesaId ? { ...m, status: 'aguardando conta' } : m));
+      }
+      // O Realtime/intervalo sincroniza o restante automaticamente
+    } catch (err) {
+      // Em caso de erro, remove do Set local
+      aguardandoContaIds.current.delete(pedidoId);
+      alert("Erro ao pedir conta da comanda.");
+      fetchData();
+    }
   };
 
   const handlePedirConta = async (mesaId: string) => {
-
-    const mesaItens = (itensPedido || []).filter(i => {
-
-       const p = (pedidos || []).find(ped => ped.id === i.pedido_id);
-
-       return p && p.mesa_id === mesaId;
-
-    });
-
-    if (mesaItens.length === 0) {
-
-      if(!confirm("Sem itens. Pedir conta?")) return;
-
-    }
-
-    if(!confirm("Pedir conta ao caixa?")) return;
-
     try {
-
       await supabase.from('mesas').update({ status: 'aguardando conta' }).eq('id', mesaId);
-
       fetchData();
-
       setSelectedMesa(null);
-
     } catch (err) {
-
       alert("Erro.");
-
     }
-
   };
 
   const handleTransferMesa = async () => {
-
     if (!targetMesaId || !selectedMesa) return;
 
-    if(!confirm("Transferir mesa?")) return;
-
     await supabase.from('pedidos').update({ mesa_id: targetMesaId }).eq('mesa_id', selectedMesa.id).neq('status', 'finalizado');
-
-    await supabase.from('mesas').update({ status: 'livre', precisa_garcom: false }).eq('id', selectedMesa.id);
-
-    await supabase.from('mesas').update({ status: selectedMesa.status, precisa_garcom: selectedMesa.precisa_garcom }).eq('id', targetMesaId);
+    await supabase.from('mesas').update({ status: 'livre' }).eq('id', selectedMesa.id);
+    await supabase.from('mesas').update({ status: selectedMesa.status }).eq('id', targetMesaId);
 
     setShowTransferModal(false);
-
     setTargetMesaId('');
-
     setSelectedMesa(null);
-
     fetchData();
-
   };
 
   const currentCartTotal = items.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
@@ -634,7 +625,31 @@ export const Garcom = () => {
 
                       <button className="btn-outline" onClick={() => setShowTransferModal(true)} style={{ width: 'auto' }}>⇄</button>
 
-                      <button className="btn-primary" onClick={() => setShowAddMenu(!showAddMenu)} style={{ width: 'auto' }}>{showAddMenu ? 'Ver' : '✚'}</button>
+                      <button 
+                        className="btn-primary" 
+                        onClick={() => {
+                          if (showAddMenu) {
+                            // Se está na tela de adicionar, volta para a visão geral
+                            setShowAddMenu(false);
+                            setSelectedComandaId(null);
+                          } else {
+                            // Se clicou no +, vai adicionar itens
+                            if (currentMesaPedidos.length === 0) {
+                              setSelectedComandaId('new');
+                            } else if (currentMesaPedidos.length === 1) {
+                              setSelectedComandaId(currentMesaPedidos[0].id);
+                            } else {
+                              // Se tem múltiplas comandas, precisa selecionar uma
+                              alert("Mesa com múltiplas comandas. Selecione a comanda abaixo para adicionar itens.");
+                              return;
+                            }
+                            setShowAddMenu(true);
+                          }
+                        }} 
+                        style={{ width: 'auto' }}
+                      >
+                        {showAddMenu ? 'Ver' : '✚'}
+                      </button>
 
                     </div>
 
@@ -646,60 +661,109 @@ export const Garcom = () => {
                       <h4 className="mb-4" style={{ fontSize: '0.9rem', opacity: 0.7 }}>SELECIONE A COMANDA:</h4>
                       <div className="d-flex flex-col gap-3" style={{ paddingBottom: '10rem' }}>
                         {currentMesaPedidos.map(pedido => (
-                          <button 
+                          <div 
                             key={pedido.id} 
-                            className="card hover-surface d-flex justify-between items-center" 
-                            style={{ padding: '1.2rem', textAlign: 'left', borderLeft: '4px solid var(--primary-color)' }}
-                            onClick={() => {
-                              setSelectedComandaId(pedido.id);
-                              setShowAddMenu(true);
+                            className="card hover-surface" 
+                            style={{ 
+                              padding: '1.2rem', 
+                              textAlign: 'left', 
+                              borderLeft: (pedido.status === 'aguardando_conta' || aguardandoContaIds.current.has(pedido.id)) ? '4px solid #f59e0b' : '4px solid var(--primary-color)', 
+                              color: '#fff', 
+                              display: 'flex', 
+                              flexDirection: 'column',
+                              background: (pedido.status === 'aguardando_conta' || aguardandoContaIds.current.has(pedido.id)) ? 'rgba(245, 158, 11, 0.08)' : 'rgba(255,255,255,0.03)'
                             }}
                           >
-                            <div style={{ flex: 1 }}>
-                              <div style={{ fontWeight: 800 }}>{pedido.cliente_nome || 'Sem nome'}</div>
-                              <div style={{ fontSize: '0.7rem', opacity: 0.5 }}>R$ {formatCurrency(pedido.total)}</div>
-                              
-                              {/* Preview de Itens */}
-                              <div style={{ fontSize: '0.65rem', marginTop: '5px', opacity: 0.8, color: 'var(--primary-color)' }}>
-                                {itensPedido.filter(i => i.pedido_id === pedido.id).slice(0, 3).map(i => i.produtos?.nome).join(', ')}
-                                {itensPedido.filter(i => i.pedido_id === pedido.id).length > 3 && '...'}
+                            <div 
+                              className="d-flex justify-between items-center cursor-pointer" 
+                              onClick={() => {
+                                setSelectedComandaId(pedido.id);
+                                setShowAddMenu(true);
+                              }}
+                            >
+                              <div style={{ flex: 1 }}>
+                                <div style={{ fontWeight: 800, color: '#fff', fontSize: '1.1rem' }}>{pedido.cliente_nome || 'Sem nome'}</div>
+                                <div style={{ fontSize: '0.85rem', opacity: 0.7, color: '#e2e8f0', marginTop: '4px' }}>R$ {formatCurrency(pedido.total)}</div>
+                                
+                                {/* Preview de Itens */}
+                                <div style={{ fontSize: '0.75rem', marginTop: '6px', color: '#94a3b8', fontStyle: 'italic' }}>
+                                  {itensPedido.filter(i => i.pedido_id === pedido.id).slice(0, 3).map(i => i.produtos?.nome).join(', ')}
+                                  {itensPedido.filter(i => i.pedido_id === pedido.id).length > 3 && '...'}
+                                </div>
                               </div>
+                              <span style={{ fontSize: '1.5rem', opacity: 0.5 }}>&rarr;</span>
                             </div>
-                            <span style={{ fontSize: '1.2rem' }}>&rarr;</span>
-                          </button>
+
+                            <div className="mt-3 pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+                              {(pedido.status === 'aguardando_conta' || aguardandoContaIds.current.has(pedido.id)) ? (
+                                <div style={{ 
+                                  background: 'rgba(245, 158, 11, 0.15)', 
+                                  border: '1px solid #f59e0b', 
+                                  borderRadius: '8px', 
+                                  padding: '10px 14px', 
+                                  textAlign: 'center',
+                                  fontWeight: 800,
+                                  color: '#f59e0b',
+                                  fontSize: '0.9rem',
+                                  letterSpacing: '0.05em'
+                                }}>
+                                  ⏳ AGUARDANDO CONTA
+                                </div>
+                              ) : (
+                                <button 
+                                  className="btn-outline" 
+                                  style={{ width: '100%', padding: '8px', fontSize: '0.85rem', border: '1px solid rgba(255,255,255,0.1)' }}
+                                  onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    handlePedirContaComanda(pedido.id, selectedMesa.id); 
+                                  }}
+                                >
+                                  🧾 Pedir Conta Desta Comanda
+                                </button>
+                              )}
+                            </div>
+                          </div>
                         ))}
 
                         <button 
                           className="btn-success" 
-                          style={{ padding: '1.2rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}
+                          style={{ padding: '0.7rem 1rem', marginTop: '1rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontSize: '0.9rem' }}
                           onClick={() => {
                             setSelectedComandaId('new');
                             setShowAddMenu(true);
                           }}
                         >
-                          ✚ ABRIR NOVA COMANDA
+                          ✚ Abrir Nova Comanda
                         </button>
 
-                        <div className="card mt-6" style={{ background: 'rgba(255,255,255,0.02)', padding: '1rem' }}>
-                           <button 
-                            className="btn-warning w-full" 
+                        <div className="d-flex gap-2 mt-3">
+                          <button 
+                            className="btn-warning" 
                             onClick={() => handlePedirConta(selectedMesa.id)}
                             disabled={selectedMesa.status === 'aguardando conta'}
-                            style={{ padding: '1rem', fontWeight: 800 }}
+                            style={{ flex: 1, padding: '0.6rem 0.5rem', fontWeight: 800, fontSize: '0.8rem' }}
                           >
-                            {selectedMesa.status === 'aguardando conta' ? 'FECHAMENTO SOLICITADO' : 'SOLICITAR CONTA (MESA TODA)'}
+                            {selectedMesa.status === 'aguardando conta' ? '✓ Conta Solicitada' : '🧾 Conta (Mesa Toda)'}
                           </button>
-                          
-                          {selectedMesa.status === 'aguardando conta' && (
-                            <button className="btn-danger w-full mt-2" onClick={() => handleCancelarFechamento(selectedMesa.id)}>
-                               CANCELAR SOLICITAÇÃO
+
+                          {selectedMesa.status === 'aguardando conta' ? (
+                            <button 
+                              className="btn-danger" 
+                              onClick={() => handleCancelarFechamento(selectedMesa.id)}
+                              style={{ flex: 1, padding: '0.6rem 0.5rem', fontSize: '0.8rem' }}
+                            >
+                              ✕ Cancelar
+                            </button>
+                          ) : (
+                            <button 
+                              className="btn-outline" 
+                              onClick={() => handleLiberarMesa(selectedMesa.id)}
+                              style={{ flex: 1, padding: '0.6rem 0.5rem', fontSize: '0.8rem', opacity: 0.6 }}
+                            >
+                              🔓 Liberar Vazia
                             </button>
                           )}
                         </div>
-
-                        <button className="btn-outline mt-4" onClick={() => handleLiberarMesa(selectedMesa.id)} style={{ opacity: 0.5 }}>
-                          Liberar Mesa Vazia
-                        </button>
                       </div>
                     </div>
                   ) : (

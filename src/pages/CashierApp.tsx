@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 
 import { useAuth } from '../contexts/AuthContext';
 
-import { 
+import {
 
-  LogOut, Receipt, History as HistoryIcon, Printer, 
+  LogOut, Receipt, History as HistoryIcon, Printer,
 
   Lock, DollarSign,
 
@@ -164,7 +164,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   const [dividirPor, setDividirPor] = useState(1);
 
-  const [splitPayments, setSplitPayments] = useState<{method: PaymentMethod | null, amount: number}[]>([]);
+  const [splitPayments, setSplitPayments] = useState<{ method: PaymentMethod | null, amount: number }[]>([]);
 
   const [incluirTaxa, setIncluirTaxa] = useState(false);
 
@@ -212,9 +212,9 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
       const { data: itensKds } = await supabase
 
-         .from('itens_pedido')
+        .from('itens_pedido')
 
-         .select(`
+        .select(`
 
            id, 
 
@@ -230,107 +230,107 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
          `)
 
-         .in('status', ['pendente', 'em preparo']);
+        .in('status', ['pendente', 'em preparo']);
 
       if (itensKds) {
 
-         const formatted = itensKds.map((i: any) => ({
+        const formatted = itensKds.map((i: any) => ({
 
-           id: i.id,
+          id: i.id,
 
-           pedido_id: i.pedido_id,
+          pedido_id: i.pedido_id,
 
-           produto_nome: i.produtos?.nome,
+          produto_nome: i.produtos?.nome,
 
-           categoria: i.produtos?.categoria,
+          categoria: i.produtos?.categoria,
 
-           quantidade: i.quantidade,
+          quantidade: i.quantidade,
 
-           status: i.status,
+          status: i.status,
 
-           params: {
+          params: {
 
-             mesa: i.pedidos?.mesas?.numero || 0,
+            mesa: i.pedidos?.mesas?.numero || 0,
 
-             data_hora: i.pedidos?.data_hora
+            data_hora: i.pedidos?.data_hora
 
-           }
+          }
 
-         }));
+        }));
 
-         const formattedWithExtra = formatted.map(f => ({
+        const formattedWithExtra = formatted.map(f => ({
 
-           ...f,
+          ...f,
 
-           mesa: f.params.mesa,
+          mesa: f.params.mesa,
 
-           data_hora: f.params.data_hora
+          data_hora: f.params.data_hora
 
-         }));
+        }));
 
-         const CATS_COZINHA = [
+        const CATS_COZINHA = [
 
-           'PETISCO', 'PETISCOS', 'LANCHES', 'LANCHE', 'PORÇÕES', 'PORCOES', 
+          'PETISCO', 'PETISCOS', 'LANCHES', 'LANCHE', 'PORÇÕES', 'PORCOES',
 
-           'PORÇÃO', 'PORCAO', 'COZINHA', 'PRATOS', 'PRATO', 'REFEIÇÕES', 
+          'PORÇÃO', 'PORCAO', 'COZINHA', 'PRATOS', 'PRATO', 'REFEIÇÕES',
 
-           'REFEICOES', 'ENTRADAS', 'SOBREMESAS', 'SOBREMESA', 'PIZZA', 'BURGER'
+          'REFEICOES', 'ENTRADAS', 'SOBREMESAS', 'SOBREMESA', 'PIZZA', 'BURGER'
 
-         ];
+        ];
 
-         const CATS_BAR = [
+        const CATS_BAR = [
 
-           'COQUETÉIS', 'COQUITEIS', 'COQUETEIS', 'DRINKS', 'DRINK', 
+          'COQUETÉIS', 'COQUITEIS', 'COQUETEIS', 'DRINKS', 'DRINK',
 
-           'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS',
+          'DOSES', 'DOSE', 'GIN', 'CAIPIRINHA', 'BATIDAS', 'DESTILADOS (DOSE)', 'DESTILADOS',
 
-           'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA'
+          'BEBIDAS', 'BEBIDA', 'CHOPP', 'CERVEJA'
 
-         ];
+        ];
 
-         const NAMES_BAR_FALLBACK = [
+        const NAMES_BAR_FALLBACK = [
 
-           "caipirinha cachaça", "caipivodka smirnoff", "caipivodka absolut",
+          "caipirinha cachaça", "caipivodka smirnoff", "caipivodka absolut",
 
-           "gin tônica tanqueray", "gin tanqueray com red bull", "dry martini",
+          "gin tônica tanqueray", "gin tanqueray com red bull", "dry martini",
 
-           "campari", "aperol"
+          "campari", "aperol"
 
-         ];
+        ];
 
-         const filtered = formattedWithExtra.filter((item: any) => {
+        const filtered = formattedWithExtra.filter((item: any) => {
 
-           const cat = (item.categoria || '').toUpperCase();
+          const cat = (item.categoria || '').toUpperCase();
 
-           const nome = (item.produto_nome || '').trim().toLowerCase();
+          const nome = (item.produto_nome || '').trim().toLowerCase();
 
-           // Cozinha
+          // Cozinha
 
-           if (CATS_COZINHA.includes(cat)) return true;
+          if (CATS_COZINHA.includes(cat)) return true;
 
-           // Bar
+          // Bar
 
-           if (CATS_BAR.includes(cat)) return true;
+          if (CATS_BAR.includes(cat)) return true;
 
-           if (NAMES_BAR_FALLBACK.includes(nome)) return true;
+          if (NAMES_BAR_FALLBACK.includes(nome)) return true;
 
-           return false;
+          return false;
 
-         });
+        });
 
-         // Ordenar por data_hora ASC (Antigos primeiro)
+        // Ordenar por data_hora ASC (Antigos primeiro)
 
-         filtered.sort((a: any, b: any) => new Date(a.data_hora).getTime() - new Date(b.data_hora).getTime());
+        filtered.sort((a: any, b: any) => new Date(a.data_hora).getTime() - new Date(b.data_hora).getTime());
 
-         setCozinhaItems(filtered);
+        setCozinhaItems(filtered);
 
-         if (isInitialLoad && itensKds) {
+        if (isInitialLoad && itensKds) {
 
-            setPrintedItemIds(itensKds.map((i: any) => i.id));
+          setPrintedItemIds(itensKds.map((i: any) => i.id));
 
-            setIsInitialLoad(false);
+          setIsInitialLoad(false);
 
-         }
+        }
 
       }
 
@@ -384,7 +384,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
     fetchData();
 
-    const interval = setInterval(fetchData, 5000); 
+    const interval = setInterval(fetchData, 5000);
 
     return () => clearInterval(interval);
 
@@ -420,7 +420,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   const removeFromCart = (id: string) => {
 
-     setCarrinho(carrinho.filter(item => item.id !== id));
+    setCarrinho(carrinho.filter(item => item.id !== id));
 
   };
 
@@ -460,21 +460,20 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
       .eq('pedido_id', pedido.id);
 
     setCheckoutItens(itens?.map(i => ({
-       id: i.id,
-       nome: i.produtos?.nome,
-       quantidade: i.quantidade,
-       preco: Number(i.preco_unitario),
-       categoria: i.produtos?.categoria,
-       status: i.status,
-       pedido_id: i.pedido_id
+      id: i.id,
+      nome: i.produtos?.nome,
+      quantidade: i.quantidade,
+      preco: Number(i.preco_unitario),
+      categoria: i.produtos?.categoria,
+      status: i.status,
+      pedido_id: i.pedido_id
     })) || []);
 
     setIsCheckoutOpen(true);
   };
 
   const handleDeleteCheckoutItem = async (item: any) => {
-
-    if (!confirm(`Deseja remover "${item.nome}" da comanda?`)) return;
+    // Confirmação removida (navegador pode bloquear nativamente)
 
     if (selectedMesa) {
 
@@ -516,11 +515,11 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
     } else {
 
-       // Balcão
+      // Balcão
 
-       setCarrinho(prev => prev.filter(i => i.id !== item.id));
+      setCarrinho(prev => prev.filter(i => i.id !== item.id));
 
-       setCheckoutItens(prev => prev.filter(i => i.id !== item.id));
+      setCheckoutItens(prev => prev.filter(i => i.id !== item.id));
 
     }
 
@@ -625,8 +624,8 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
         }
 
         const turnoId = localStorage.getItem('turno_id');
-        const updateData: any = { 
-          status: 'finalizado', 
+        const updateData: any = {
+          status: 'finalizado',
           forma_pagamento: formaPagamentoStr,
           total: totalComTaxa,
           finalizado_at: new Date().toISOString()
@@ -649,11 +648,11 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
         if (!outrosPedidos || outrosPedidos.length === 0) {
           // 3. Se não houver mais nada, liberar a mesa
           await supabase.from('mesas').update({ status: 'livre' }).eq('id', selectedMesa.id);
-          alert("Comanda finalizada e mesa liberada!");
+          // Mesa liberada silenciosamente
         } else {
-          // 4. Se ainda houver consumo, a mesa volta para 'ocupada' (ou mantém aguardando se for o caso)
+          // 4. Se ainda houver consumo, a mesa volta para 'ocupada'
           await supabase.from('mesas').update({ status: 'ocupada' }).eq('id', selectedMesa.id);
-          alert("Comanda finalizada! Mesa continua ocupada por outros clientes.");
+          // Outros clientes continuam consumindo
         }
 
       } else {
@@ -732,15 +731,15 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   const handleStatusChangeCozinha = async (itemId: string) => {
 
-      const nextStatus = 'pronto';
+    const nextStatus = 'pronto';
 
-      const updates: any = { 
-        status: nextStatus
-      };
+    const updates: any = {
+      status: nextStatus
+    };
 
-      const { error } = await supabase.from('itens_pedido').update(updates).eq('id', itemId);
+    const { error } = await supabase.from('itens_pedido').update(updates).eq('id', itemId);
 
-      if (!error) fetchData();
+    if (!error) fetchData();
 
   };
 
@@ -862,7 +861,7 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
   const categories = ['TODOS', 'PETISCO', 'BEBIDAS', 'COQUETÉIS', 'DESTILADOS (DOSE)', 'OUTROS'];
 
-  if (loading) return <div className="layout-container d-flex justify-center items-center" style={{height: '100vh', background: 'transparent', color: 'var(--primary-color)'}}>CARREGANDO CAIXA...</div>;
+  if (loading) return <div className="layout-container d-flex justify-center items-center" style={{ height: '100vh', background: 'transparent', color: 'var(--primary-color)' }}>CARREGANDO CAIXA...</div>;
 
   return (
 
@@ -872,51 +871,51 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
         <aside className="sidebar" style={{ width: '100px' }}>
 
-           <div style={{ marginBottom: '3rem' }}>
+          <div style={{ marginBottom: '3rem' }}>
 
-             <img src="/logo.png" alt="Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'contain', border: '1px solid var(--primary-color)' }} />
+            <img src="/logo.png" alt="Logo" style={{ width: '45px', height: '45px', borderRadius: '50%', objectFit: 'contain', border: '1px solid var(--primary-color)' }} />
 
-           </div>
+          </div>
 
-           <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem', opacity: isCaixaAberto ? 1 : 0.3, pointerEvents: isCaixaAberto ? 'auto' : 'none' }}>
+          <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem', opacity: isCaixaAberto ? 1 : 0.3, pointerEvents: isCaixaAberto ? 'auto' : 'none' }}>
 
-              <button onClick={() => setActiveTab('mesas')} style={{ background: 'none', border: 'none', color: activeTab === 'mesas' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer', position: 'relative' }}>
+            <button onClick={() => setActiveTab('mesas')} style={{ background: 'none', border: 'none', color: activeTab === 'mesas' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer', position: 'relative' }}>
 
-                <Store size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>MESAS</span>
+              <Store size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>MESAS</span>
 
-              </button>
+            </button>
 
-              <button onClick={() => setActiveTab('balcao')} style={{ background: 'none', border: 'none', color: activeTab === 'balcao' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+            <button onClick={() => setActiveTab('balcao')} style={{ background: 'none', border: 'none', color: activeTab === 'balcao' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
 
-                <ShoppingCart size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>BALCÃO</span>
+              <ShoppingCart size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>BALCÃO</span>
 
-              </button>
+            </button>
 
-              <button onClick={() => setActiveTab('cozinha')} style={{ background: 'none', border: 'none', color: activeTab === 'cozinha' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+            <button onClick={() => setActiveTab('cozinha')} style={{ background: 'none', border: 'none', color: activeTab === 'cozinha' ? 'var(--primary-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
 
-                <Utensils size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>COZINHA</span>
+              <Utensils size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>COZINHA</span>
 
-              </button>
+            </button>
 
-              <button onClick={() => setActiveTab('fechamento')} style={{ background: 'none', border: 'none', color: activeTab === 'fechamento' ? 'var(--danger-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+            <button onClick={() => setActiveTab('fechamento')} style={{ background: 'none', border: 'none', color: activeTab === 'fechamento' ? 'var(--danger-color)' : '#444', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
 
-                <Lock size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>FECHAR DIA</span>
+              <Lock size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 700 }}>FECHAR DIA</span>
 
-              </button>
+            </button>
 
-              <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
+            <div style={{ marginTop: 'auto', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
 
-                <Link to="/garcom" style={{ textDecoration: 'none', color: 'var(--primary-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
+              <Link to="/garcom" style={{ textDecoration: 'none', color: 'var(--primary-color)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px' }}>
 
-                  <Users size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 800 }}>GARÇOM</span>
+                <Users size={28} /> <span style={{ fontSize: '0.6rem', fontWeight: 800 }}>GARÇOM</span>
 
-                </Link>
+              </Link>
 
-              </div>
+            </div>
 
-           </nav>
+          </nav>
 
-           <button onClick={() => signOut()} style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer' }}><LogOut size={28}/></button>
+          <button onClick={() => signOut()} style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer' }}><LogOut size={28} /></button>
 
         </aside>
 
@@ -928,29 +927,29 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
         <header className="d-flex justify-between items-center mb-6">
 
-           <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>
 
-              {!isCaixaAberto ? 'STATUS DO SISTEMA' : (activeTab === 'mesas' ? 'GESTÃO DE MESAS' : activeTab === 'balcao' ? 'VENDA DE BALCÃO' : activeTab === 'cozinha' ? 'PEDIDOS COZINHA' : 'FECHAMENTO E LEITURA Z')}
+            {!isCaixaAberto ? 'STATUS DO SISTEMA' : (activeTab === 'mesas' ? 'GESTÃO DE MESAS' : activeTab === 'balcao' ? 'VENDA DE BALCÃO' : activeTab === 'cozinha' ? 'PEDIDOS COZINHA' : 'FECHAMENTO E LEITURA Z')}
 
-           </h1>
+          </h1>
 
-           <div className="d-flex items-center gap-4">
+          <div className="d-flex items-center gap-4">
 
-              <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>LOGADO COMO: <b style={{color: '#fff'}}>{profile?.full_name?.toUpperCase()}</b></span>
+            <span style={{ fontSize: '0.8rem', opacity: 0.6 }}>LOGADO COMO: <b style={{ color: '#fff' }}>{profile?.full_name?.toUpperCase()}</b></span>
 
-              {(profile?.role === 'garcom' || profile?.role === 'admin' || profile?.role === 'dono') && (
+            {(profile?.role === 'garcom' || profile?.role === 'admin' || profile?.role === 'dono') && (
 
-                <Link to="/garcom" className="btn-outline" style={{ fontSize: '0.7rem', borderColor: 'var(--success-color)', color: 'var(--success-color)' }}>
+              <Link to="/garcom" className="btn-outline" style={{ fontSize: '0.7rem', borderColor: 'var(--success-color)', color: 'var(--success-color)' }}>
 
-                  🏃 Painel Garçom
+                🏃 Painel Garçom
 
-                </Link>
+              </Link>
 
-              )}
+            )}
 
-              <Link to="/" className="btn-outline" style={{ fontSize: '0.7rem' }}>PAINEL GERAL</Link>
+            <Link to="/" className="btn-outline" style={{ fontSize: '0.7rem' }}>PAINEL GERAL</Link>
 
-           </div>
+          </div>
 
         </header>
 
@@ -964,58 +963,60 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                 <motion.div key="mesas" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1rem' }}>
 
-                   {pedidosAtivos.filter(p => p.mesa_id).map(pedido => (
+                  {pedidosAtivos.filter(p => p.mesa_id).map(pedido => (
 
-                     <div key={pedido.id} className="card hover-surface" style={{ 
+                    <div key={pedido.id} className="card hover-surface" style={{
 
-                       borderLeft: `8px solid ${pedido.mesas?.status === 'aguardando conta' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'}`, 
+                      borderLeft: `8px solid ${(pedido.status === 'aguardando_conta' || pedido.mesas?.status === 'aguardando conta') ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)'}`,
 
-                       padding: '1.2rem', 
+                      padding: '1.2rem',
 
-                       textAlign: 'center',
+                      textAlign: 'center',
 
-                       position: 'relative'
+                      position: 'relative',
 
-                     }}>
+                      background: pedido.status === 'aguardando_conta' ? 'rgba(220, 38, 38, 0.05)' : 'rgba(255,255,255,0.03)'
 
-                        <div style={{ fontSize: '0.6rem', opacity: 0.5, marginBottom: '0.3rem', textTransform: 'uppercase' }}>
+                    }}>
 
-                          {pedido.mesas?.status === 'aguardando conta' ? 'Aguardando Conta' : 'Em Consumo'}
+                      <div style={{ fontSize: '0.6rem', opacity: 0.5, marginBottom: '0.3rem', textTransform: 'uppercase' }}>
 
-                        </div>
+                        {pedido.status === 'aguardando_conta' ? '⚠️ CONTA SOLICITADA' : (pedido.mesas?.status === 'aguardando conta' ? 'Mesa Aguardando Conta' : 'Em Consumo')}
 
-                        <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>Mesa {pedido.mesas?.numero || '?'}</div>
+                      </div>
 
-                        <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-color)', marginTop: '2px', marginBottom: '0.8rem' }}>
+                      <div style={{ fontSize: '1.4rem', fontWeight: 900 }}>Mesa {pedido.mesas?.numero || '?'}</div>
 
-                          {pedido.cliente_nome || 'Sem nome'}
+                      <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary-color)', marginTop: '2px', marginBottom: '0.8rem' }}>
 
-                        </div>
+                        {pedido.cliente_nome || 'Sem nome'}
 
-                        
+                      </div>
 
-                        <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>R$ {Number(pedido.total).toFixed(2)}</div>
 
-                        
 
-                        <button className="btn-primary w-full" onClick={() => openTableCheckoutForPedido(pedido)} style={{ background: 'var(--primary-color)', color: '#000', padding: '0.6rem', fontSize: '0.8rem' }}>FECHAR COMANDA</button>
+                      <div style={{ fontSize: '1.1rem', fontWeight: 800, marginBottom: '1rem' }}>R$ {Number(pedido.total).toFixed(2)}</div>
 
-                     </div>
 
-                   ))}
 
-                   {mesasPendentes.length === 0 && (
+                      <button className="btn-primary w-full" onClick={() => openTableCheckoutForPedido(pedido)} style={{ background: 'var(--primary-color)', color: '#000', padding: '0.6rem', fontSize: '0.8rem' }}>FECHAR COMANDA</button>
 
-                     <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', opacity: 0.8 }}>
+                    </div>
 
-                       <Receipt size={80} style={{margin: '0 auto 1.5rem', opacity: 0.3}} />
+                  ))}
 
-                       <h3 style={{ opacity: 0.3 }}>Nenhuma mesa ativa no momento.</h3>
+                  {mesasPendentes.length === 0 && (
 
- 
-                     </div>
+                    <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', opacity: 0.8 }}>
 
-                   )}
+                      <Receipt size={80} style={{ margin: '0 auto 1.5rem', opacity: 0.3 }} />
+
+                      <h3 style={{ opacity: 0.3 }}>Nenhuma mesa ativa no momento.</h3>
+
+
+                    </div>
+
+                  )}
 
                 </motion.div>
 
@@ -1023,131 +1024,131 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
               {activeTab === 'balcao' && (
 
-                <motion.div key="balcao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} 
+                <motion.div key="balcao" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
 
                   style={{ display: 'grid', gridTemplateColumns: window.innerWidth > 768 ? '1fr 350px' : '1fr', gap: '1.5rem', height: 'auto' }}>
 
-                    <div className="d-flex flex-col gap-3">
+                  <div className="d-flex flex-col gap-3">
 
-                       <div style={{ position: 'relative' }}>
+                    <div style={{ position: 'relative' }}>
 
-                          <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', opacity: 0.4 }} />
+                      <Search size={18} style={{ position: 'absolute', left: '12px', top: '12px', opacity: 0.4 }} />
 
-                          <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Pesquisar..." style={{ width: '100%', padding: '0.8rem 1rem 0.8rem 2.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#fff' }} />
-
-                       </div>
-
-                       <div className="mb-2">
-
-                          <select 
-
-                            value={selectedCategory} 
-
-                            onChange={(e) => { setSelectedCategory(e.target.value); setSearchTerm(''); }} 
-
-                            style={{ 
-
-                              width: '100%',
-
-                              padding: '0.70rem',
-
-                              background: 'rgba(0,0,0,0.3)',
-
-                              border: '1px solid var(--primary-color)',
-
-                              borderRadius: '10px',
-
-                              color: '#fff',
-
-                              fontSize: '1rem',
-
-                              fontWeight: 800,
-
-                              outline: 'none',
-
-                              appearance: 'none',
-
-                              backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
-
-                              backgroundRepeat: 'no-repeat',
-
-                              backgroundPosition: 'right 1rem center'
-
-                            }}
-
-                          >
-
-                            {categories.map(cat => (
-
-                              <option key={cat} value={cat}>{cat}</option>
-
-                            ))}
-
-                          </select>
-
-                       </div>
-
-                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))', gap: '0.8rem', overflowY: 'auto' }}>
-
-                           {filteredProdutos.map(p => (
-
-                             <div key={p.id} className="card hover-surface text-center" style={{ padding: '0.8rem', cursor: p.estoque > 0 ? 'pointer' : 'not-allowed', opacity: p.estoque > 0 ? 1 : 0.4 }} onClick={() => p.estoque > 0 && addToCart(p)}>
-
-                                <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>{p.nome}</div>
-
-                                <div style={{ color: p.estoque > 0 ? 'var(--primary-color)' : '#666', fontWeight: 900 }}>R$ {formatCurrency(p.preco)}</div>
-
-                                {p.estoque <= 0 && <div style={{fontSize: '0.55rem', fontWeight: 900, color: 'var(--danger-color)', marginTop: '4px'}}>ESGOTADO</div>}
-
-                             </div>
-
-                           ))}
-
-                       </div>
+                      <input value={searchTerm} onChange={e => setSearchTerm(e.target.value)} placeholder="Pesquisar..." style={{ width: '100%', padding: '0.8rem 1rem 0.8rem 2.8rem', background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-color)', borderRadius: '10px', color: '#fff' }} />
 
                     </div>
 
-                   <div className="card d-flex flex-col" style={{ padding: '0', background: '#f8f8f8', border: '1px solid #ddd', borderRadius: '4px', color: '#111', fontFamily: 'monospace' }}>
+                    <div className="mb-2">
 
-                      <div style={{ background: '#eee', padding: '1rem', textAlign: 'center', borderBottom: '2px dashed #ccc' }}>
+                      <select
 
-                         <h3 style={{ fontSize: '0.9rem', fontWeight: 900 }}>Big Beef</h3>
+                        value={selectedCategory}
+
+                        onChange={(e) => { setSelectedCategory(e.target.value); setSearchTerm(''); }}
+
+                        style={{
+
+                          width: '100%',
+
+                          padding: '0.70rem',
+
+                          background: 'rgba(0,0,0,0.3)',
+
+                          border: '1px solid var(--primary-color)',
+
+                          borderRadius: '10px',
+
+                          color: '#fff',
+
+                          fontSize: '1rem',
+
+                          fontWeight: 800,
+
+                          outline: 'none',
+
+                          appearance: 'none',
+
+                          backgroundImage: "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E\")",
+
+                          backgroundRepeat: 'no-repeat',
+
+                          backgroundPosition: 'right 1rem center'
+
+                        }}
+
+                      >
+
+                        {categories.map(cat => (
+
+                          <option key={cat} value={cat}>{cat}</option>
+
+                        ))}
+
+                      </select>
+
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(135px, 1fr))', gap: '0.8rem', overflowY: 'auto' }}>
+
+                      {filteredProdutos.map(p => (
+
+                        <div key={p.id} className="card hover-surface text-center" style={{ padding: '0.8rem', cursor: p.estoque > 0 ? 'pointer' : 'not-allowed', opacity: p.estoque > 0 ? 1 : 0.4 }} onClick={() => p.estoque > 0 && addToCart(p)}>
+
+                          <div style={{ fontWeight: 700, fontSize: '0.8rem' }}>{p.nome}</div>
+
+                          <div style={{ color: p.estoque > 0 ? 'var(--primary-color)' : '#666', fontWeight: 900 }}>R$ {formatCurrency(p.preco)}</div>
+
+                          {p.estoque <= 0 && <div style={{ fontSize: '0.55rem', fontWeight: 900, color: 'var(--danger-color)', marginTop: '4px' }}>ESGOTADO</div>}
+
+                        </div>
+
+                      ))}
+
+                    </div>
+
+                  </div>
+
+                  <div className="card d-flex flex-col" style={{ padding: '0', background: '#f8f8f8', border: '1px solid #ddd', borderRadius: '4px', color: '#111', fontFamily: 'monospace' }}>
+
+                    <div style={{ background: '#eee', padding: '1rem', textAlign: 'center', borderBottom: '2px dashed #ccc' }}>
+
+                      <h3 style={{ fontSize: '0.9rem', fontWeight: 900 }}>Big Beef</h3>
+
+                    </div>
+
+                    <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="d-flex flex-col gap-2">
+
+                      {carrinho.map(item => (
+
+                        <div key={item.id} className="d-flex justify-between">
+
+                          <span>{item.quantidade}x {item.nome}</span>
+
+                          <span>{formatCurrency(item.preco * item.quantidade)}</span>
+
+                        </div>
+
+                      ))}
+
+                    </div>
+
+                    <div style={{ padding: '1rem', background: '#fff', borderTop: '2px dashed #ccc' }}>
+
+                      <div className="d-flex justify-between mb-4">
+
+                        <b>TOTAL GERAL:</b>
+
+                        <b style={{ fontSize: '1.5rem' }}>R$ {carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0).toFixed(2)}</b>
 
                       </div>
 
-                      <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }} className="d-flex flex-col gap-2">
+                      <button className="btn-primary w-full py-4" onClick={openQuickCheckout}>RECEBER AGORA</button>
 
-                         {carrinho.map(item => (
+                      <button className="w-full mt-2" style={{ background: 'none', border: 'none', color: '#666', fontSize: '0.6rem' }} onClick={() => setCarrinho([])}>CANCELAR TUDO</button>
 
-                           <div key={item.id} className="d-flex justify-between">
+                    </div>
 
-                              <span>{item.quantidade}x {item.nome}</span>
-
-                              <span>{formatCurrency(item.preco * item.quantidade)}</span>
-
-                           </div>
-
-                         ))}
-
-                      </div>
-
-                      <div style={{ padding: '1rem', background: '#fff', borderTop: '2px dashed #ccc' }}>
-
-                         <div className="d-flex justify-between mb-4">
-
-                            <b>TOTAL GERAL:</b>
-
-                            <b style={{ fontSize: '1.5rem' }}>R$ {carrinho.reduce((acc, i) => acc + (i.preco * i.quantidade), 0).toFixed(2)}</b>
-
-                         </div>
-
-                         <button className="btn-primary w-full py-4" onClick={openQuickCheckout}>RECEBER AGORA</button>
-
-                         <button className="w-full mt-2" style={{ background: 'none', border: 'none', color: '#666', fontSize: '0.6rem' }} onClick={() => setCarrinho([])}>CANCELAR TUDO</button>
-
-                      </div>
-
-                   </div>
+                  </div>
 
                 </motion.div>
 
@@ -1157,49 +1158,49 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
                 <motion.div key="cozinha" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
 
-                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
 
-                      {cozinhaItems.map(item => (
+                    {cozinhaItems.map(item => (
 
-                        <div key={item.id} className="card" style={{ borderLeft: '6px solid var(--danger-color)', padding: '1.2rem' }}>
+                      <div key={item.id} className="card" style={{ borderLeft: '6px solid var(--danger-color)', padding: '1.2rem' }}>
 
-                           <div className="d-flex justify-between items-center mb-3">
+                        <div className="d-flex justify-between items-center mb-3">
 
-                              <span style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--primary-color)' }}>MESA {item.mesa}</span>
+                          <span style={{ fontSize: '1.1rem', fontWeight: 900, color: 'var(--primary-color)' }}>MESA {item.mesa}</span>
 
-                              <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>{new Date(item.data_hora).toLocaleTimeString()}</span>
-
-                           </div>
-
-                           <div style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{item.quantidade}x {item.produto_nome}</div>
-
-                           <div style={{ fontSize: '0.7rem', opacity: 0.6, marginBottom: '1rem', textTransform: 'uppercase' }}>CATEGORIA: {item.categoria}</div>
-
-                           <div className="d-flex gap-2">
-
-                              <button className="btn-success w-full" style={{ padding: '0.5rem', fontSize: '0.75rem' }} onClick={() => handleStatusChangeCozinha(item.id)}>CONCLUIR PREPARO</button>
-
-                              <button className="btn-outline" style={{ padding: '0.5rem' }} onClick={() => handleImprimirCozinha(item)}><Printer size={16}/></button>
-
-                           </div>
+                          <span style={{ fontSize: '0.65rem', opacity: 0.5 }}>{new Date(item.data_hora).toLocaleTimeString()}</span>
 
                         </div>
 
-                      ))}
+                        <div style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '0.5rem' }}>{item.quantidade}x {item.produto_nome}</div>
 
-                      {cozinhaItems.length === 0 && (
+                        <div style={{ fontSize: '0.7rem', opacity: 0.6, marginBottom: '1rem', textTransform: 'uppercase' }}>CATEGORIA: {item.categoria}</div>
 
-                        <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', opacity: 0.3 }}>
+                        <div className="d-flex gap-2">
 
-                           <Utensils size={64} style={{ margin: '0 auto 1rem' }} />
+                          <button className="btn-success w-full" style={{ padding: '0.5rem', fontSize: '0.75rem' }} onClick={() => handleStatusChangeCozinha(item.id)}>CONCLUIR PREPARO</button>
 
-                           <p>Nenhum pedido de produção pendente.</p>
+                          <button className="btn-outline" style={{ padding: '0.5rem' }} onClick={() => handleImprimirCozinha(item)}><Printer size={16} /></button>
 
                         </div>
 
-                      )}
+                      </div>
 
-                   </div>
+                    ))}
+
+                    {cozinhaItems.length === 0 && (
+
+                      <div style={{ gridColumn: '1/-1', textAlign: 'center', padding: '5rem', opacity: 0.3 }}>
+
+                        <Utensils size={64} style={{ margin: '0 auto 1rem' }} />
+
+                        <p>Nenhum pedido de produção pendente.</p>
+
+                      </div>
+
+                    )}
+
+                  </div>
 
                 </motion.div>
 
@@ -1243,565 +1244,565 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: 'fixed', inset: 0, background: 'rgba(2, 6, 23, 0.9)', backdropFilter: 'blur(10px)', zIndex: 10000 }}>
 
-             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="card" style={{ width: '100vw', height: '100vh', maxWidth: 'none', maxHeight: 'none', borderRadius: 0, padding: 0, overflowY: 'auto', display: 'grid', gridTemplateColumns: window.innerWidth > 992 ? '1fr 380px' : '1fr', alignItems: 'stretch', background: 'transparent' }}>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="card" style={{ width: '100vw', height: '100vh', maxWidth: 'none', maxHeight: 'none', borderRadius: 0, padding: 0, overflowY: 'auto', display: 'grid', gridTemplateColumns: window.innerWidth > 992 ? '1fr 380px' : '1fr', alignItems: 'stretch', background: 'transparent' }}>
 
-                {/* Coluna Esquerda: Itens e Conferência */}
+              {/* Coluna Esquerda: Itens e Conferência */}
 
-                <div style={{ padding: '1.2rem', borderRight: '1px solid #222', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ padding: '1.2rem', borderRight: '1px solid #222', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
 
-                   <div className="d-flex justify-between items-center mb-4">
+                <div className="d-flex justify-between items-center mb-4">
 
-                      <div>
+                  <div>
 
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 900 }}>CONFERÊNCIA</h2>
+                    <h2 style={{ fontSize: '1.5rem', fontWeight: 900 }}>CONFERÊNCIA</h2>
 
-                        <span style={{ opacity: 0.5 }}>{selectedMesa ? `Mesa ${selectedMesa.numero}` : 'Venda Rápida'}</span>
+                    <span style={{ opacity: 0.5 }}>{selectedMesa ? `Mesa ${selectedMesa.numero}` : 'Venda Rápida'}</span>
+
+                  </div>
+
+                  <button onClick={() => setIsCheckoutOpen(false)} style={{ background: '#222', border: 'none', color: '#fff', padding: '8px', borderRadius: '50%' }}><X size={18} /></button>
+
+                </div>
+
+                <div style={{ flex: 1, overflowY: 'auto', marginBottom: '1rem' }} className="d-flex flex-col gap-2">
+
+                  {checkoutItens.map((item, i) => (
+
+                    <div key={i} className="d-flex justify-between items-center p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)' }}>
+
+                      <div className="d-flex items-center gap-3">
+
+                        <span style={{ fontWeight: 800, color: 'var(--primary-color)' }}>{item.quantidade}x</span>
+
+                        <span style={{ fontWeight: 600 }}>{item.nome}</span>
 
                       </div>
 
-                      <button onClick={() => setIsCheckoutOpen(false)} style={{ background: '#222', border: 'none', color: '#fff', padding: '8px', borderRadius: '50%' }}><X size={18}/></button>
+                      <div className="d-flex items-center gap-4">
 
-                   </div>
+                        <span style={{ fontWeight: 700 }}>R$ {formatCurrency(item.preco * item.quantidade)}</span>
 
-                   <div style={{ flex: 1, overflowY: 'auto', marginBottom: '1rem' }} className="d-flex flex-col gap-2">
+                        {profile && (
 
-                      {checkoutItens.map((item, i) => (
+                          <button
 
-                        <div key={i} className="d-flex justify-between items-center p-3 rounded-lg" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                            onClick={() => handleDeleteCheckoutItem(item)}
 
-                           <div className="d-flex items-center gap-3">
+                            style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', padding: '4px' }}
 
-                              <span style={{ fontWeight: 800, color: 'var(--primary-color)' }}>{item.quantidade}x</span>
+                          >
 
-                              <span style={{ fontWeight: 600 }}>{item.nome}</span>
+                            <Trash2 size={16} />
 
-                           </div>
+                          </button>
 
-                           <div className="d-flex items-center gap-4">
+                        )}
 
-                              <span style={{ fontWeight: 700 }}>R$ {formatCurrency(item.preco * item.quantidade)}</span>
+                      </div>
 
-                              {profile && (
+                    </div>
 
-                                <button 
+                  ))}
 
-                                  onClick={() => handleDeleteCheckoutItem(item)}
+                </div>
 
-                                  style={{ background: 'none', border: 'none', color: 'var(--danger-color)', cursor: 'pointer', padding: '4px' }}
+                {selectedMesa && (
 
-                                >
+                  <div className="card mb-4" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)' }}>
 
-                                  <Trash2 size={16} />
+                    <div className="d-flex justify-between items-center">
 
-                                </button>
+                      <div className="d-flex flex-col">
 
-                              )}
+                        <span style={{ opacity: 0.6 }}>DIVIDIR CONTA POR:</span>
 
-                           </div>
+                        {dividirPor > 1 && (
+
+                          <span style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 800 }}>
+
+                            VLR. INDIVIDUAL: R$ {formatCurrency((totalComTaxa / dividirPor))}
+
+                          </span>
+
+                        )}
+
+                      </div>
+
+                      <div className="d-flex items-center gap-3">
+
+                        <button
+
+                          onClick={() => {
+
+                            const next = Math.max(1, dividirPor - 1);
+
+                            setDividirPor(next);
+
+                            if (next > 1) {
+
+                              setCustomAmount((totalComTaxa / next).toFixed(2));
+
+                            } else {
+
+                              setCustomAmount(totalComTaxa.toFixed(2));
+
+                            }
+
+                          }}
+
+                          className="btn-outline"
+
+                          style={{ width: '30px', height: '30px', padding: 0 }}
+
+                        >
+
+                          -
+
+                        </button>
+
+                        <b>{dividirPor}</b>
+
+                        <button
+
+                          onClick={() => {
+
+                            const next = dividirPor + 1;
+
+                            setDividirPor(next);
+
+                            setCustomAmount((totalComTaxa / next).toFixed(2));
+
+                          }}
+
+                          className="btn-outline"
+
+                          style={{ width: '30px', height: '30px', padding: 0 }}
+
+                        >
+
+                          +
+
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                )}
+
+                {false && (
+
+                  <div className="card mb-4" style={{ padding: '1rem', border: '1px solid var(--primary-color)', background: 'rgba(220, 38, 38, 0.05)' }}>
+
+                    <h4 className="mb-3" style={{ fontSize: '0.8rem', color: 'var(--primary-color)' }}>DIVISíO POR PESSOA</h4>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '200px', overflowY: 'auto', paddingRight: '5px' }}>
+
+                      {splitPayments.map((p, idx) => (
+
+                        <div key={idx} style={{ paddingBottom: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+
+                          <div className="d-flex justify-between items-center mb-2">
+
+                            <span style={{ fontSize: '0.7rem', fontWeight: 800 }}>PESSOA {idx + 1}</span>
+
+                            <input
+
+                              type="number"
+
+                              value={p.amount.toFixed(2)}
+
+                              onChange={(e) => {
+
+                                const newSplits = [...splitPayments];
+
+                                newSplits[idx].amount = parseFloat(e.target.value) || 0;
+
+                                setSplitPayments(newSplits);
+
+                              }}
+
+                              style={{ width: '80px', background: 'transparent', border: 'none', borderBottom: '1px solid #444', color: '#fff', textAlign: 'right', fontSize: '0.8rem', fontWeight: 700 }}
+
+                            />
+
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px' }}>
+
+                            {['dinheiro', 'pix', 'debito', 'credito'].map(m => (
+
+                              <button
+
+                                key={m}
+
+                                onClick={() => {
+
+                                  const newSplits = [...splitPayments];
+
+                                  newSplits[idx].method = m as PaymentMethod;
+
+                                  setSplitPayments(newSplits);
+
+                                }}
+
+                                style={{
+
+                                  fontSize: '0.55rem',
+
+                                  padding: '4px 2px',
+
+                                  background: p.method === m ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
+
+                                  color: p.method === m ? '#000' : '#fff',
+
+                                  border: 'none',
+
+                                  borderRadius: '4px',
+
+                                  fontWeight: 800
+
+                                }}
+
+                              >
+
+                                {m.toUpperCase()}
+
+                              </button>
+
+                            ))}
+
+                          </div>
 
                         </div>
 
                       ))}
 
-                   </div>
+                    </div>
 
-                   {selectedMesa && (
+                    <button
 
-                     <div className="card mb-4" style={{ padding: '1rem', background: 'rgba(255,255,255,0.03)' }}>
+                      onClick={() => {
 
-                         <div className="d-flex justify-between items-center">
+                        const completed = splitPayments.filter(s => s.method !== null);
 
-                            <div className="d-flex flex-col">
+                        if (completed.length === 0) {
 
-                               <span style={{ opacity: 0.6 }}>DIVIDIR CONTA POR:</span>
+                          alert("Selecione a forma de pagamento de pelo menos uma person!");
 
-                               {dividirPor > 1 && (
+                          return;
 
-                                 <span style={{ fontSize: '0.8rem', color: 'var(--primary-color)', fontWeight: 800 }}>
+                        }
 
-                                   VLR. INDIVIDUAL: R$ {formatCurrency((totalComTaxa / dividirPor))}
+                        const newPayments = [...pagamentos];
 
-                                 </span>
+                        completed.forEach(s => {
 
-                               )}
+                          newPayments.push({ method: s.method!, amount: s.amount });
 
-                            </div>
+                        });
 
-                            <div className="d-flex items-center gap-3">
+                        setPagamentos(newPayments);
 
-                               <button 
+                        setDividirPor(1);
 
-                                 onClick={() => {
+                        setSplitPayments([]);
 
-                                   const next = Math.max(1, dividirPor-1);
+                      }}
 
-                                   setDividirPor(next);
+                      className="btn-primary w-full mt-4"
 
-                                   if (next > 1) {
+                      style={{ fontSize: '0.7rem' }}
 
-                                      setCustomAmount((totalComTaxa / next).toFixed(2));
+                    >
 
-                                   } else {
+                      ADICIONAR PAGAMENTOS DA DIVISíO
 
-                                      setCustomAmount(totalComTaxa.toFixed(2));
+                    </button>
 
-                                   }
+                  </div>
 
-                                 }} 
+                )}
 
-                                 className="btn-outline" 
+                <button className="btn-outline w-full p-4" onClick={() => handleImprimir(checkoutItens)}><Printer size={18} /> IMPRIMIR CONFERÊNCIA</button>
 
-                                 style={{width: '30px', height: '30px', padding: 0}}
+              </div>
 
-                               >
+              {/* Coluna Direita: Pagamentos */}
 
-                                 -
+              <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
 
-                               </button>
+                <div className="mb-4">
 
-                               <b>{dividirPor}</b>
+                  <span style={{ fontSize: '0.7rem', opacity: 0.4 }}>VALOR TOTAL</span>
 
-                               <button 
-
-                                 onClick={() => {
-
-                                   const next = dividirPor + 1;
-
-                                   setDividirPor(next);
-
-                                   setCustomAmount((totalComTaxa / next).toFixed(2));
-
-                                 }} 
-
-                                 className="btn-outline" 
-
-                                 style={{width: '30px', height: '30px', padding: 0}}
-
-                               >
-
-                                 +
-
-                               </button>
-
-                            </div>
-
-                         </div>
-
-                      </div>
-
-                    )}
-
-                    {false && (
-
-                      <div className="card mb-4" style={{ padding: '1rem', border: '1px solid var(--primary-color)', background: 'rgba(220, 38, 38, 0.05)' }}>
-
-                         <h4 className="mb-3" style={{ fontSize: '0.8rem', color: 'var(--primary-color)' }}>DIVISíO POR PESSOA</h4>
-
-                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', maxHeight: '200px', overflowY: 'auto', paddingRight: '5px' }}>
-
-                            {splitPayments.map((p, idx) => (
-
-                              <div key={idx} style={{ paddingBottom: '0.8rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-
-                                 <div className="d-flex justify-between items-center mb-2">
-
-                                    <span style={{ fontSize: '0.7rem', fontWeight: 800 }}>PESSOA {idx+1}</span>
-
-                                    <input 
-
-                                       type="number" 
-
-                                       value={p.amount.toFixed(2)} 
-
-                                       onChange={(e) => {
-
-                                          const newSplits = [...splitPayments];
-
-                                          newSplits[idx].amount = parseFloat(e.target.value) || 0;
-
-                                          setSplitPayments(newSplits);
-
-                                       }}
-
-                                       style={{ width: '80px', background: 'transparent', border: 'none', borderBottom: '1px solid #444', color: '#fff', textAlign: 'right', fontSize: '0.8rem', fontWeight: 700 }}
-
-                                    />
-
-                                 </div>
-
-                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px' }}>
-
-                                    {['dinheiro', 'pix', 'debito', 'credito'].map(m => (
-
-                                      <button 
-
-                                        key={m}
-
-                                        onClick={() => {
-
-                                          const newSplits = [...splitPayments];
-
-                                          newSplits[idx].method = m as PaymentMethod;
-
-                                          setSplitPayments(newSplits);
-
-                                        }}
-
-                                        style={{ 
-
-                                          fontSize: '0.55rem', 
-
-                                          padding: '4px 2px', 
-
-                                          background: p.method === m ? 'var(--primary-color)' : 'rgba(255,255,255,0.05)',
-
-                                          color: p.method === m ? '#000' : '#fff',
-
-                                          border: 'none',
-
-                                          borderRadius: '4px',
-
-                                          fontWeight: 800
-
-                                        }}
-
-                                      >
-
-                                        {m.toUpperCase()}
-
-                                      </button>
-
-                                    ))}
-
-                                 </div>
-
-                              </div>
-
-                            ))}
-
-                         </div>
-
-                         <button 
-
-                           onClick={() => {
-
-                             const completed = splitPayments.filter(s => s.method !== null);
-
-                             if (completed.length === 0) {
-
-                                alert("Selecione a forma de pagamento de pelo menos uma person!");
-
-                                return;
-
-                             }
-
-                             const newPayments = [...pagamentos];
-
-                             completed.forEach(s => {
-
-                                newPayments.push({ method: s.method!, amount: s.amount });
-
-                             });
-
-                             setPagamentos(newPayments);
-
-                             setDividirPor(1);
-
-                             setSplitPayments([]);
-
-                           }}
-
-                           className="btn-primary w-full mt-4" 
-
-                           style={{ fontSize: '0.7rem' }}
-
-                         >
-
-                           ADICIONAR PAGAMENTOS DA DIVISíO
-
-                         </button>
-
-                      </div>
-
-                    )}
-
-                   <button className="btn-outline w-full p-4" onClick={() => handleImprimir(checkoutItens)}><Printer size={18} /> IMPRIMIR CONFERÊNCIA</button>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary-color)' }}>R$ {formatCurrency(totalComTaxa)}</div>
 
                 </div>
 
-                {/* Coluna Direita: Pagamentos */}
+                <div className="mb-4">
 
-                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.2rem', display: 'flex', flexDirection: 'column', height: '100%', overflowY: 'auto' }}>
+                  <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block', marginBottom: '8px', fontWeight: 800 }}>MÉTODO DE PAGAMENTO</label>
 
-                    <div className="mb-4">
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
 
-                       <span style={{ fontSize: '0.7rem', opacity: 0.4 }}>VALOR TOTAL</span>
+                    {[
 
-                       <div style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--primary-color)' }}>R$ {formatCurrency(totalComTaxa)}</div>
+                      { id: 'dinheiro', label: 'DINHEIRO', color: '#10b981' },
 
-                    </div>
+                      { id: 'pix', label: 'PIX', color: '#dc2626' },
 
-                    <div className="mb-4">
+                      { id: 'debito', label: 'DÉBITO', color: '#fff' },
 
-                        <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block', marginBottom: '8px', fontWeight: 800 }}>MÉTODO DE PAGAMENTO</label>
+                      { id: 'credito', label: 'CRÉDITO', color: '#fff' }
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.4rem', marginBottom: '1rem' }}>
+                    ].map(m => (
 
-                           {[
+                      <button
 
-                             { id: 'dinheiro', label: 'DINHEIRO', color: '#10b981' },
+                        key={m.id}
 
-                             { id: 'pix', label: 'PIX', color: '#dc2626' },
+                        onClick={() => setSelectedMethod(m.id as PaymentMethod)}
 
-                             { id: 'debito', label: 'DÉBITO', color: '#fff' },
+                        className={selectedMethod === m.id ? 'btn-primary' : 'btn-outline'}
 
-                             { id: 'credito', label: 'CRÉDITO', color: '#fff' }
+                        style={{
 
-                           ].map(m => (
+                          padding: '0.5rem',
 
-                             <button 
+                          fontSize: '0.7rem',
 
-                                key={m.id}
+                          fontWeight: 800,
 
-                                onClick={() => setSelectedMethod(m.id as PaymentMethod)}
+                          borderColor: selectedMethod === m.id ? m.color : 'rgba(255,255,255,0.1)',
 
-                                className={selectedMethod === m.id ? 'btn-primary' : 'btn-outline'}
+                          background: selectedMethod === m.id ? m.color : 'transparent',
 
-                                style={{ 
+                          color: selectedMethod === m.id ? '#000' : m.color,
 
-                                  padding: '0.5rem', 
+                          transition: '0.2s'
 
-                                  fontSize: '0.7rem', 
+                        }}
 
-                                  fontWeight: 800,
+                      >
 
-                                  borderColor: selectedMethod === m.id ? m.color : 'rgba(255,255,255,0.1)',
+                        {m.label}
 
-                                  background: selectedMethod === m.id ? m.color : 'transparent',
+                      </button>
 
-                                  color: selectedMethod === m.id ? '#000' : m.color,
+                    ))}
 
-                                  transition: '0.2s'
+                  </div>
 
-                                }}
+                  <div className="card" style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
 
-                             >
+                    <div className="d-flex justify-between items-center mb-1">
 
-                               {m.label}
+                      <div className="d-flex flex-col">
 
-                             </button>
+                        <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block' }}>VALOR PARCIAL (R$)</label>
 
-                           ))}
+                        {dividirPor > 1 && (
 
-                        </div>
+                          <span style={{ fontSize: '0.6rem', color: 'var(--primary-color)', fontWeight: 800 }}>
 
-                        <div className="card" style={{ padding: '0.8rem', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            PAGAMENTO {pagamentos.length + 1} DE {dividirPor}
 
-                           <div className="d-flex justify-between items-center mb-1">
+                          </span>
 
-                              <div className="d-flex flex-col">
+                        )}
 
-                                <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block' }}>VALOR PARCIAL (R$)</label>
+                      </div>
 
-                                {dividirPor > 1 && (
+                      {dividirPor > 1 && (
 
-                                  <span style={{ fontSize: '0.6rem', color: 'var(--primary-color)', fontWeight: 800 }}>
+                        <button
 
-                                    PAGAMENTO {pagamentos.length + 1} DE {dividirPor}
+                          onClick={() => setCustomAmount(valorIndividual.toFixed(2))}
 
-                                  </span>
-
-                                )}
-
-                              </div>
-
-                              {dividirPor > 1 && (
-
-                                <button 
-
-                                  onClick={() => setCustomAmount(valorIndividual.toFixed(2))}
-
-                                  style={{ background: 'var(--primary-color)', border: 'none', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', cursor: 'pointer' }}
-
-                                >
-
-                                  COTA INDIVIDUAL
-
-                                </button>
-
-                              )}
-
-                           </div>
-
-                           <input 
-
-                             type="number" 
-
-                             value={customAmount} 
-
-                             onChange={e => setCustomAmount(e.target.value)} 
-
-                             placeholder={suggestedAmount.toFixed(2)}
-
-                             style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '2px solid #333', color: '#fff', padding: '0.2rem 0', marginBottom: '0.8rem', fontSize: '1.5rem', fontWeight: 900, outline: 'none' }} 
-
-                           />
-
-                           {selectedMethod === 'dinheiro' && (
-
-                               <div className="mt-2 mb-4 p-3 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
-
-                                 <div className="d-flex justify-between items-center mb-2">
-
-                                   <label style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 800 }}>VALOR RECEBIDO DO CLIENTE (R$)</label>
-
-                                   {troco > 0 && (
-
-                                     <div style={{ background: '#10b981', color: '#000', fontSize: '0.7rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px' }}>
-
-                                       TROCO: R$ {formatCurrency(troco)}
-
-                                     </div>
-
-                                   )}
-
-                                 </div>
-
-                                 <input 
-
-                                   type="number" 
-
-                                   value={valorRecebido} 
-
-                                   onChange={e => setValorRecebido(e.target.value)} 
-
-                                   placeholder="0.00"
-
-                                   style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid #10b981', color: '#fff', fontSize: '1.2rem', fontWeight: 800, outline: 'none' }}
-
-                                 />
-
-                               </div>
-
-                             )}
-
-                           <button 
-
-                             onClick={() => {
-
-                               if (!selectedMethod) {
-
-                                  alert("Selecione um método de pagamento primeiro!");
-
-                                  return;
-
-                               }
-
-                               const val = parseFloat(customAmount) || suggestedAmount;
-
-                               handleAddPayment(selectedMethod, val);
-
-                             }}
-
-                             disabled={!selectedMethod}
-
-                             className="btn-primary w-full"
-
-                             style={{ opacity: selectedMethod ? 1 : 0.5 }}
-
-                           >
-
-                             ADICIONAR PAGAMENTO
-
-                           </button>
-
-                        </div>
-
-                    </div>
-
-                    <div style={{ flex: 1, overflowY: 'auto', marginBottom: '1rem' }}>
-
-                       <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block', marginBottom: '8px' }}>PAGAMENTOS RECEBIDOS</label>
-
-                       {pagamentos.map((p, i) => (
-
-                         <div key={i} className="d-flex justify-between items-center p-2 rounded-lg mb-2" style={{ background: 'rgba(255,255,255,0.05)', borderLeft: `4px solid ${p.method === 'dinheiro' ? '#10b981' : '#dc2626'}` }}>
-
-                            <div className="d-flex flex-col">
-
-                              <span style={{ fontSize: '0.7rem', fontWeight: 800 }}>{p.method.toUpperCase()}</span>
-
-                            </div>
-
-                            <div className="d-flex items-center gap-3">
-
-                              <b style={{ fontSize: '0.9rem' }}>R$ {formatCurrency(p.amount)}</b>
-
-                              <button 
-
-                                onClick={() => handleRemovePayment(i)} 
-
-                                style={{ background: 'rgba(220, 53, 69, 0.1)', border: 'none', color: 'var(--danger-color)', padding: '5px', borderRadius: '4px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-
-                              >
-
-                                <Trash2 size={14} />
-
-                              </button>
-
-                            </div>
-
-                         </div>
-
-                       ))}
-
-                       {pagamentos.length === 0 && <div style={{ textAlign: 'center', opacity: 0.3, padding: '1rem', border: '1px dashed #333', borderRadius: '8px', fontSize: '0.7rem' }}>Aguardando...</div>}
-
-                    </div>
-
-                    <div className="pt-4" style={{ borderTop: '1px solid #222' }}>
-
-                        <div className="d-flex justify-between items-center mb-4">
-
-                           <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>RESTANTE</span>
-
-                           <div style={{ fontSize: '1.5rem', fontWeight: 900, color: totalRestante > 0 ? 'var(--danger-color)' : 'var(--success-color)' }}>
-
-                             R$ {formatCurrency(totalRestante)}
-
-                           </div>
-
-                        </div>
-
-                        <button 
-
-                           onClick={handleFinalizar}
-
-                           className="btn-primary w-full py-4" 
-
-                           style={{ 
-
-                             fontSize: '1rem', 
-
-                             fontWeight: 900,
-
-                             background: totalRestante <= 0.1 ? 'var(--success-color)' : '#222',
-
-                             color: totalRestante <= 0.1 ? '#000' : '#444'
-
-                           }}
+                          style={{ background: 'var(--primary-color)', border: 'none', color: '#000', fontSize: '0.6rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px', cursor: 'pointer' }}
 
                         >
 
-                           {totalRestante <= 0.1 ? 'FINALIZAR VENDA' : 'PAGAMENTO PENDENTE'}
+                          COTA INDIVIDUAL
 
                         </button>
 
+                      )}
+
                     </div>
+
+                    <input
+
+                      type="number"
+
+                      value={customAmount}
+
+                      onChange={e => setCustomAmount(e.target.value)}
+
+                      placeholder={suggestedAmount.toFixed(2)}
+
+                      style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '2px solid #333', color: '#fff', padding: '0.2rem 0', marginBottom: '0.8rem', fontSize: '1.5rem', fontWeight: 900, outline: 'none' }}
+
+                    />
+
+                    {selectedMethod === 'dinheiro' && (
+
+                      <div className="mt-2 mb-4 p-3 rounded-lg" style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)' }}>
+
+                        <div className="d-flex justify-between items-center mb-2">
+
+                          <label style={{ fontSize: '0.65rem', color: '#10b981', fontWeight: 800 }}>VALOR RECEBIDO DO CLIENTE (R$)</label>
+
+                          {troco > 0 && (
+
+                            <div style={{ background: '#10b981', color: '#000', fontSize: '0.7rem', fontWeight: 900, padding: '2px 8px', borderRadius: '4px' }}>
+
+                              TROCO: R$ {formatCurrency(troco)}
+
+                            </div>
+
+                          )}
+
+                        </div>
+
+                        <input
+
+                          type="number"
+
+                          value={valorRecebido}
+
+                          onChange={e => setValorRecebido(e.target.value)}
+
+                          placeholder="0.00"
+
+                          style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid #10b981', color: '#fff', fontSize: '1.2rem', fontWeight: 800, outline: 'none' }}
+
+                        />
+
+                      </div>
+
+                    )}
+
+                    <button
+
+                      onClick={() => {
+
+                        if (!selectedMethod) {
+
+                          alert("Selecione um método de pagamento primeiro!");
+
+                          return;
+
+                        }
+
+                        const val = parseFloat(customAmount) || suggestedAmount;
+
+                        handleAddPayment(selectedMethod, val);
+
+                      }}
+
+                      disabled={!selectedMethod}
+
+                      className="btn-primary w-full"
+
+                      style={{ opacity: selectedMethod ? 1 : 0.5 }}
+
+                    >
+
+                      ADICIONAR PAGAMENTO
+
+                    </button>
+
+                  </div>
 
                 </div>
 
-             </motion.div>
+                <div style={{ flex: 1, overflowY: 'auto', marginBottom: '1rem' }}>
+
+                  <label style={{ fontSize: '0.65rem', opacity: 0.4, display: 'block', marginBottom: '8px' }}>PAGAMENTOS RECEBIDOS</label>
+
+                  {pagamentos.map((p, i) => (
+
+                    <div key={i} className="d-flex justify-between items-center p-2 rounded-lg mb-2" style={{ background: 'rgba(255,255,255,0.05)', borderLeft: `4px solid ${p.method === 'dinheiro' ? '#10b981' : '#dc2626'}` }}>
+
+                      <div className="d-flex flex-col">
+
+                        <span style={{ fontSize: '0.7rem', fontWeight: 800 }}>{p.method.toUpperCase()}</span>
+
+                      </div>
+
+                      <div className="d-flex items-center gap-3">
+
+                        <b style={{ fontSize: '0.9rem' }}>R$ {formatCurrency(p.amount)}</b>
+
+                        <button
+
+                          onClick={() => handleRemovePayment(i)}
+
+                          style={{ background: 'rgba(220, 53, 69, 0.1)', border: 'none', color: 'var(--danger-color)', padding: '5px', borderRadius: '4px', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+
+                        >
+
+                          <Trash2 size={14} />
+
+                        </button>
+
+                      </div>
+
+                    </div>
+
+                  ))}
+
+                  {pagamentos.length === 0 && <div style={{ textAlign: 'center', opacity: 0.3, padding: '1rem', border: '1px dashed #333', borderRadius: '8px', fontSize: '0.7rem' }}>Aguardando...</div>}
+
+                </div>
+
+                <div className="pt-4" style={{ borderTop: '1px solid #222' }}>
+
+                  <div className="d-flex justify-between items-center mb-4">
+
+                    <span style={{ fontSize: '0.8rem', opacity: 0.5 }}>RESTANTE</span>
+
+                    <div style={{ fontSize: '1.5rem', fontWeight: 900, color: totalRestante > 0 ? 'var(--danger-color)' : 'var(--success-color)' }}>
+
+                      R$ {formatCurrency(totalRestante)}
+
+                    </div>
+
+                  </div>
+
+                  <button
+
+                    onClick={handleFinalizar}
+
+                    className="btn-primary w-full py-4"
+
+                    style={{
+
+                      fontSize: '1rem',
+
+                      fontWeight: 900,
+
+                      background: totalRestante <= 0.1 ? 'var(--success-color)' : '#222',
+
+                      color: totalRestante <= 0.1 ? '#000' : '#444'
+
+                    }}
+
+                  >
+
+                    {totalRestante <= 0.1 ? 'FINALIZAR VENDA' : 'PAGAMENTO PENDENTE'}
+
+                  </button>
+
+                </div>
+
+              </div>
+
+            </motion.div>
 
           </motion.div>
 
@@ -1817,51 +1818,51 @@ export const Caixa = ({ isEmbedded = false }: { isEmbedded?: boolean }) => {
 
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={() => setIsDetailModalOpen(false)}>
 
-             <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="card" style={{ maxWidth: '500px', width: '90%' }} onClick={e => e.stopPropagation()}>
+            <motion.div initial={{ y: 20 }} animate={{ y: 0 }} className="card" style={{ maxWidth: '500px', width: '90%' }} onClick={e => e.stopPropagation()}>
 
-                <div className="d-flex justify-between mb-4">
+              <div className="d-flex justify-between mb-4">
 
-                   <h3>DETALHES DO PEDIDO</h3>
+                <h3>DETALHES DO PEDIDO</h3>
 
-                   <button onClick={() => setIsDetailModalOpen(false)}><X/></button>
+                <button onClick={() => setIsDetailModalOpen(false)}><X /></button>
 
-                </div>
+              </div>
 
-                <div className="mb-4">
+              <div className="mb-4">
 
-                   <div style={{fontSize: '0.8rem', opacity: 0.6}}>FORMA DE PAGAMENTO:</div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>FORMA DE PAGAMENTO:</div>
 
-                   <div style={{fontWeight: 700}}>{selectedPedidoDetail?.forma_pagamento}</div>
+                <div style={{ fontWeight: 700 }}>{selectedPedidoDetail?.forma_pagamento}</div>
 
-                </div>
+              </div>
 
-                <div className="d-flex flex-col gap-2">
+              <div className="d-flex flex-col gap-2">
 
-                   {itemsPedidoDetail.map((item: any, idx) => (
+                {itemsPedidoDetail.map((item: any, idx) => (
 
-                      <div key={idx} className="d-flex justify-between p-2 rounded" style={{background: 'rgba(255,255,255,0.05)'}}>
+                  <div key={idx} className="d-flex justify-between p-2 rounded" style={{ background: 'rgba(255,255,255,0.05)' }}>
 
-                         <span>{item.quantidade}x {item.produtos?.nome}</span>
+                    <span>{item.quantidade}x {item.produtos?.nome}</span>
 
-                         <span>R$ {formatCurrency((item.preco_unitario * item.quantidade))}</span>
+                    <span>R$ {formatCurrency((item.preco_unitario * item.quantidade))}</span>
 
-                      </div>
+                  </div>
 
-                   ))}
+                ))}
 
-                </div>
+              </div>
 
-                <div className="mt-4 pt-4 text-right" style={{borderTop: '1px solid #333'}}>
+              <div className="mt-4 pt-4 text-right" style={{ borderTop: '1px solid #333' }}>
 
-                   <div style={{fontSize: '0.8rem', opacity: 0.6}}>TOTAL:</div>
+                <div style={{ fontSize: '0.8rem', opacity: 0.6 }}>TOTAL:</div>
 
-                   <div style={{fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)'}}>R$ {formatCurrency(selectedPedidoDetail?.total)}</div>
+                <div style={{ fontSize: '1.5rem', fontWeight: 900, color: 'var(--primary-color)' }}>R$ {formatCurrency(selectedPedidoDetail?.total)}</div>
 
-                </div>
+              </div>
 
-                <button className="btn-outline w-full mt-6" onClick={() => handleImprimir(itemsPedidoDetail)}>IMPRIMIR SEGUNDA VIA</button>
+              <button className="btn-outline w-full mt-6" onClick={() => handleImprimir(itemsPedidoDetail)}>IMPRIMIR SEGUNDA VIA</button>
 
-             </motion.div>
+            </motion.div>
 
           </motion.div>
 
